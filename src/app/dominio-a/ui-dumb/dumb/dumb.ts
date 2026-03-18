@@ -6,6 +6,7 @@ import {
   signal
 } from '@angular/core';
 import { DsButton } from '../../../shared/ui';
+import { dataRepository } from '../../data-access';
 
 /**
  * componente de card para renderizar texto de smart component.
