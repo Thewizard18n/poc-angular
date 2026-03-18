@@ -13,16 +13,19 @@ module.exports = defineConfig([
       tseslint.configs.recommended,
       angular.configs.tsRecommended,
     ],
-    plugins:{
+    plugins: {
       '@softarc/sheriff': sheriff
+    },
+    settings: {
+      sheriff: {
+        configPath: './apps/poc-angular-moderno/sheriff.config.ts'
+      }
     },
     processor: angular.processInlineTemplates,
     rules: {
-            // desliga regras TypeScript que não interessam agora
       '@typescript-eslint/no-unused-vars': 'off',
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-empty-function': 'off',
-      
       "@angular-eslint/directive-selector": [
         "error",
         {

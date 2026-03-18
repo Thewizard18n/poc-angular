@@ -1,0 +1,13 @@
+@use 'app/shared/ui/tokens/tokens.scss';
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-family-base);
+  background: var(--color-background);
+  color: var(--color-text-primary);
+}

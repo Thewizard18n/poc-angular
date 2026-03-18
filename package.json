@@ -3,11 +3,11 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build",
-    "watch": "ng build --watch --configuration development",
-    "test": "ng test",
-    "lint": "ng lint",
+    "start": "nx serve",
+    "build": "nx build",
+    "watch": "nx build --watch --configuration development",
+    "test": "nx test",
+    "lint": "nx lint",
     "compodoc": "npx compodoc -p tsconfig.app.json"
   },
   "prettier": {
@@ -37,18 +37,29 @@
     "tslib": "^2.3.0"
   },
   "devDependencies": {
+    "@angular-devkit/core": "^21.1.4",
+    "@angular-devkit/schematics": "^21.1.4",
     "@angular/build": "^21.1.4",
     "@angular/cli": "^21.1.4",
     "@angular/compiler-cli": "^21.1.0",
     "@compodoc/compodoc": "^1.2.1",
-    "@eslint/js": "^10.0.1",
+    "@eslint/js": "^9.39.4",
+    "@nx/angular": "22.5.4",
+    "@nx/js": "22.5.4",
+    "@nx/workspace": "22.5.4",
+    "@schematics/angular": "^21.1.4",
     "@softarc/eslint-plugin-sheriff": "^0.19.6",
     "@softarc/sheriff-core": "^0.19.6",
+    "@swc-node/register": "~1.11.1",
+    "@swc/core": "~1.15.5",
+    "@swc/helpers": "~0.5.18",
     "angular-eslint": "21.3.1",
-    "eslint": "^10.0.3",
+    "eslint": "^9.39.4",
     "jsdom": "^27.1.0",
+    "nx": "22.5.4",
+    "prettier": "~3.6.2",
     "typescript": "~5.9.2",
-    "typescript-eslint": "8.56.1",
+    "typescript-eslint": "^8.57.1",
     "vitest": "^4.0.8"
   }
 }

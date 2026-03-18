@@ -1,0 +1,225 @@
+{
+  "apps/poc-angular-moderno/src/main.ts": {
+    "module": ".",
+    "moduleType": "barrel-less",
+    "tags": [
+      "root"
+    ],
+    "imports": [
+      "apps/poc-angular-moderno/src/app/app.config.ts",
+      "apps/poc-angular-moderno/src/app/app.ts"
+    ],
+    "unresolvedImports": [],
+    "projectName": "default",
+    "externalLibraries": [
+      "@angular/platform-browser"
+    ]
+  },
+  "apps/poc-angular-moderno/src/app/app.config.ts": {
+    "module": ".",
+    "moduleType": "barrel-less",
+    "tags": [
+      "root"
+    ],
+    "imports": [
+      "apps/poc-angular-moderno/src/app/app.routes.ts"
+    ],
+    "unresolvedImports": [],
+    "projectName": "default",
+    "externalLibraries": [
+      "@angular/core",
+      "@angular/router"
+    ]
+  },
+  "apps/poc-angular-moderno/src/app/app.routes.ts": {
+    "module": ".",
+    "moduleType": "barrel-less",
+    "tags": [
+      "root"
+    ],
+    "imports": [
+      "apps/poc-angular-moderno/src/app/dominio-a/feature-a/index.ts"
+    ],
+    "unresolvedImports": [],
+    "projectName": "default",
+    "externalLibraries": [
+      "@angular/router"
+    ]
+  },
+  "apps/poc-angular-moderno/src/app/dominio-a/feature-a/index.ts": {
+    "module": "apps/poc-angular-moderno/src/app/dominio-a/feature-a",
+    "moduleType": "barrel",
+    "tags": [
+      "noTag"
+    ],
+    "imports": [
+      "apps/poc-angular-moderno/src/app/dominio-a/feature-a/feature/feature.ts"
+    ],
+    "unresolvedImports": [],
+    "projectName": "default",
+    "externalLibraries": []
+  },
+  "apps/poc-angular-moderno/src/app/dominio-a/feature-a/feature/feature.ts": {
+    "module": "apps/poc-angular-moderno/src/app/dominio-a/feature-a",
+    "moduleType": "barrel",
+    "tags": [
+      "noTag"
+    ],
+    "imports": [
+      "apps/poc-angular-moderno/src/app/dominio-a/ui-dumb/index.ts",
+      "apps/poc-angular-moderno/src/app/dominio-a/feature-a/feature-use-case.ts",
+      "apps/poc-angular-moderno/src/app/dominio-a/data-access/index.ts"
+    ],
+    "unresolvedImports": [],
+    "projectName": "default",
+    "externalLibraries": [
+      "@angular/core"
+    ]
+  },
+  "apps/poc-angular-moderno/src/app/dominio-a/ui-dumb/index.ts": {
+    "module": "apps/poc-angular-moderno/src/app/dominio-a/ui-dumb",
+    "moduleType": "barrel",
+    "tags": [
+      "noTag"
+    ],
+    "imports": [
+      "apps/poc-angular-moderno/src/app/dominio-a/ui-dumb/dumb/dumb.ts"
+    ],
+    "unresolvedImports": [],
+    "projectName": "default",
+    "externalLibraries": []
+  },
+  "apps/poc-angular-moderno/src/app/dominio-a/ui-dumb/dumb/dumb.ts": {
+    "module": "apps/poc-angular-moderno/src/app/dominio-a/ui-dumb",
+    "moduleType": "barrel",
+    "tags": [
+      "noTag"
+    ],
+    "imports": [
+      "apps/poc-angular-moderno/src/app/shared/ui/index.ts"
+    ],
+    "unresolvedImports": [],
+    "projectName": "default",
+    "externalLibraries": [
+      "@angular/core"
+    ]
+  },
+  "apps/poc-angular-moderno/src/app/shared/ui/index.ts": {
+    "module": "apps/poc-angular-moderno/src/app/shared/ui",
+    "moduleType": "barrel",
+    "tags": [
+      "noTag"
+    ],
+    "imports": [
+      "apps/poc-angular-moderno/src/app/shared/ui/button/ds-button/ds-button.ts"
+    ],
+    "unresolvedImports": [],
+    "projectName": "default",
+    "externalLibraries": []
+  },
+  "apps/poc-angular-moderno/src/app/shared/ui/button/ds-button/ds-button.ts": {
+    "module": "apps/poc-angular-moderno/src/app/shared/ui",
+    "moduleType": "barrel",
+    "tags": [
+      "noTag"
+    ],
+    "imports": [],
+    "unresolvedImports": [
+      "@angular/material/button"
+    ],
+    "projectName": "default",
+    "externalLibraries": [
+      "@angular/core"
+    ]
+  },
+  "apps/poc-angular-moderno/src/app/dominio-a/feature-a/feature-use-case.ts": {
+    "module": "apps/poc-angular-moderno/src/app/dominio-a/feature-a",
+    "moduleType": "barrel",
+    "tags": [
+      "noTag"
+    ],
+    "imports": [
+      "apps/poc-angular-moderno/src/app/dominio-a/data-access/index.ts"
+    ],
+    "unresolvedImports": [],
+    "projectName": "default",
+    "externalLibraries": [
+      "@angular/core",
+      "@angular/router",
+      "rxjs"
+    ]
+  },
+  "apps/poc-angular-moderno/src/app/dominio-a/data-access/index.ts": {
+    "module": "apps/poc-angular-moderno/src/app/dominio-a/data-access",
+    "moduleType": "barrel",
+    "tags": [
+      "noTag"
+    ],
+    "imports": [
+      "apps/poc-angular-moderno/src/app/dominio-a/data-access/data.model.ts",
+      "apps/poc-angular-moderno/src/app/dominio-a/data-access/data.repository.ts",
+      "apps/poc-angular-moderno/src/app/dominio-a/data-access/data.repository.mock.ts"
+    ],
+    "unresolvedImports": [],
+    "projectName": "default",
+    "externalLibraries": []
+  },
+  "apps/poc-angular-moderno/src/app/dominio-a/data-access/data.model.ts": {
+    "module": "apps/poc-angular-moderno/src/app/dominio-a/data-access",
+    "moduleType": "barrel",
+    "tags": [
+      "noTag"
+    ],
+    "imports": [],
+    "unresolvedImports": [],
+    "projectName": "default",
+    "externalLibraries": []
+  },
+  "apps/poc-angular-moderno/src/app/dominio-a/data-access/data.repository.ts": {
+    "module": "apps/poc-angular-moderno/src/app/dominio-a/data-access",
+    "moduleType": "barrel",
+    "tags": [
+      "noTag"
+    ],
+    "imports": [
+      "apps/poc-angular-moderno/src/app/dominio-a/data-access/data.model.ts"
+    ],
+    "unresolvedImports": [],
+    "projectName": "default",
+    "externalLibraries": [
+      "@angular/core",
+      "rxjs"
+    ]
+  },
+  "apps/poc-angular-moderno/src/app/dominio-a/data-access/data.repository.mock.ts": {
+    "module": "apps/poc-angular-moderno/src/app/dominio-a/data-access",
+    "moduleType": "barrel",
+    "tags": [
+      "noTag"
+    ],
+    "imports": [
+      "apps/poc-angular-moderno/src/app/dominio-a/data-access/data.repository.ts",
+      "apps/poc-angular-moderno/src/app/dominio-a/data-access/data.model.ts"
+    ],
+    "unresolvedImports": [],
+    "projectName": "default",
+    "externalLibraries": [
+      "@angular/core",
+      "rxjs"
+    ]
+  },
+  "apps/poc-angular-moderno/src/app/app.ts": {
+    "module": ".",
+    "moduleType": "barrel-less",
+    "tags": [
+      "root"
+    ],
+    "imports": [],
+    "unresolvedImports": [],
+    "projectName": "default",
+    "externalLibraries": [
+      "@angular/core",
+      "@angular/router"
+    ]
+  }
+}
