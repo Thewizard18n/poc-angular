@@ -67,25 +67,25 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 - <ng-container sidenav>conteúdo do menu</ng-container>
 - <ng-container content>conteúdo principal</ng-container>
 - </ds-sidenav>
-   */
-  @Component({
-    selector: 'ds-sidenav',
-    standalone: true,
-    imports: [MatSidenavModule],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    template: `
-      <mat-sidenav-container class="container">
-        <mat-sidenav
-          [opened]="opened()"
-          [mode]="mode()"
-          class="sidenav">
-          <ng-content select="[sidenav]"></ng-content>
-        </mat-sidenav>
+     */
+    @Component({
+      selector: 'ds-sidenav',
+      standalone: true,
+      imports: [MatSidenavModule],
+      changeDetection: ChangeDetectionStrategy.OnPush,
+      template: `
+        <mat-sidenav-container class="container">
+          <mat-sidenav
+            [opened]="opened()"
+            [mode]="mode()"
+            class="sidenav">
+            <ng-content select="[sidenav]"></ng-content>
+          </mat-sidenav>
 
-        <mat-sidenav-content class="content">
-          <ng-content select="[content]"></ng-content>
-        </mat-sidenav-content>
-      </mat-sidenav-container>
+          <mat-sidenav-content class="content">
+            <ng-content select="[content]"></ng-content>
+          </mat-sidenav-content>
+        </mat-sidenav-container>
 
   `,
 styles: [`
@@ -181,6 +181,7 @@ DsSidenavComponent,
 DsFooterComponent,
 ],
 template: `
+
 <div class="shell">
 
       <ds-toolbar
@@ -315,3 +316,148 @@ imports: [RouterOutlet],
 template: `<router-outlet></router-outlet>`
 })
 export class App {}
+
+// src/app/shell/layout/shell-layout.component.ts
+import {
+Component,
+signal,
+computed,
+ChangeDetectionStrategy
+} from '@angular/core';
+import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
+import { MatListModule } from '@angular/material/list';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { DsToolbarComponent, DsSidenavComponent, DsFooterComponent } from '../../shared/ui';
+import { NAVIGATION, DomainNav } from '../navigation/navigation.config';
+
+@Component({
+selector: 'app-shell-layout',
+standalone: true,
+changeDetection: ChangeDetectionStrategy.OnPush,
+imports: [
+RouterOutlet,
+RouterLink,
+RouterLinkActive,
+MatListModule,
+MatIconModule,
+MatButtonModule,
+DsToolbarComponent,
+DsSidenavComponent,
+DsFooterComponent,
+],
+template: `
+<div class="shell">
+
+      <ds-toolbar title="POC Angular" (menuClick)="toggleSidenav()">
+        <!-- domínios na toolbar -->
+        @for (domain of navigation; track domain.id) {
+          <button
+            mat-button
+            class="domain-btn"
+            [class.active-domain]="activeDomain()?.id === domain.id"
+            (click)="setDomain(domain)">
+            <mat-icon>{{ domain.icon }}</mat-icon>
+            {{ domain.label }}
+          </button>
+        }
+      </ds-toolbar>
+
+      <ds-sidenav [opened]="sidenavOpen()" mode="side" class="sidenav-wrapper">
+
+        <!-- features do domínio ativo no sidenav -->
+        <div sidenav>
+          @if (activeDomain()) {
+            <div class="sidenav-header">
+              <mat-icon class="sidenav-icon">{{ activeDomain()!.icon }}</mat-icon>
+              <span>{{ activeDomain()!.label }}</span>
+            </div>
+            <mat-nav-list>
+              @for (feature of activeDomain()!.features; track feature.route) {
+                <a mat-list-item
+                   [routerLink]="feature.route"
+                   routerLinkActive="active-link">
+                  <mat-icon matListItemIcon>{{ feature.icon }}</mat-icon>
+                  {{ feature.label }}
+                </a>
+              }
+            </mat-nav-list>
+          }
+        </div>
+
+        <!-- conteúdo principal -->
+        <div content class="main-content">
+          <main class="main">
+            <router-outlet></router-outlet>
+          </main>
+          <ds-footer>POC Angular Moderno © 2026</ds-footer>
+        </div>
+
+      </ds-sidenav>
+
+    </div>
+
+`,
+  styles: [`
+.shell {
+display: flex;
+flex-direction: column;
+height: 100vh;
+}
+.sidenav-wrapper {
+flex: 1;
+overflow: hidden;
+}
+.main-content {
+display: flex;
+flex-direction: column;
+height: 100%;
+}
+.main {
+flex: 1;
+padding: var(--spacing-lg);
+overflow-y: auto;
+}
+.domain-btn {
+color: var(--color-text-on-primary);
+margin: 0 var(--spacing-xs);
+opacity: 0.8;
+}
+.domain-btn.active-domain {
+opacity: 1;
+border-bottom: 2px solid var(--color-text-on-primary);
+}
+.sidenav-header {
+display: flex;
+align-items: center;
+gap: var(--spacing-sm);
+padding: var(--spacing-md) var(--spacing-md);
+font-weight: 500;
+font-size: var(--font-size-lg);
+color: var(--color-primary);
+border-bottom: 1px solid var(--color-border);
+margin-bottom: var(--spacing-sm);
+}
+.sidenav-icon {
+color: var(--color-primary);
+}
+.active-link {
+color: var(--color-primary);
+font-weight: 500;
+background: var(--color-background);
+}
+`]
+})
+export class ShellLayoutComponent {
+navigation = NAVIGATION;
+sidenavOpen = signal(true);
+activeDomain = signal<DomainNav>(NAVIGATION[0]);
+
+setDomain(domain: DomainNav) {
+this.activeDomain.set(domain);
+}
+
+toggleSidenav() {
+this.sidenavOpen.update(v => !v);
+}
+}
