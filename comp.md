@@ -67,25 +67,25 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 - <ng-container sidenav>conteúdo do menu</ng-container>
 - <ng-container content>conteúdo principal</ng-container>
 - </ds-sidenav>
-     */
-    @Component({
-      selector: 'ds-sidenav',
-      standalone: true,
-      imports: [MatSidenavModule],
-      changeDetection: ChangeDetectionStrategy.OnPush,
-      template: `
-        <mat-sidenav-container class="container">
-          <mat-sidenav
-            [opened]="opened()"
-            [mode]="mode()"
-            class="sidenav">
-            <ng-content select="[sidenav]"></ng-content>
-          </mat-sidenav>
+       */
+      @Component({
+        selector: 'ds-sidenav',
+        standalone: true,
+        imports: [MatSidenavModule],
+        changeDetection: ChangeDetectionStrategy.OnPush,
+        template: `
+          <mat-sidenav-container class="container">
+            <mat-sidenav
+              [opened]="opened()"
+              [mode]="mode()"
+              class="sidenav">
+              <ng-content select="[sidenav]"></ng-content>
+            </mat-sidenav>
 
-          <mat-sidenav-content class="content">
-            <ng-content select="[content]"></ng-content>
-          </mat-sidenav-content>
-        </mat-sidenav-container>
+            <mat-sidenav-content class="content">
+              <ng-content select="[content]"></ng-content>
+            </mat-sidenav-content>
+          </mat-sidenav-container>
 
   `,
 styles: [`
@@ -347,6 +347,7 @@ DsSidenavComponent,
 DsFooterComponent,
 ],
 template: `
+
 <div class="shell">
 
       <ds-toolbar title="POC Angular" (menuClick)="toggleSidenav()">
@@ -461,3 +462,137 @@ toggleSidenav() {
 this.sidenavOpen.update(v => !v);
 }
 }
+
+Você é um desenvolvedor Angular 20 especialista. Preciso que você implemente a seguinte estrutura em um projeto Angular 20 com Angular Material já configurado.
+
+## Contexto
+
+- Projeto Angular 20 standalone
+- Angular Material já instalado
+- Estrutura de arquivos já existe em src/app/products/ e src/app/orders/
+- Seguimos arquitetura em camadas: data-access, ui-_, feature-_
+- Componentes usam ChangeDetectionStrategy.OnPush obrigatoriamente
+- Usamos Signals e toSignal do @angular/core/rxjs-interop
+- Sem NgModules — tudo standalone
+
+## O que preciso que você crie
+
+### 1. src/app/products/data-access/product.model.ts
+
+Interface ProductModel com campos:
+
+- id: string
+- nome: string
+- preco: number
+- categoria: string
+- estoque: number
+
+### 2. src/app/products/data-access/product.dto.ts
+
+Interface ProductResponseDTO com campos:
+
+- id: string
+- name: string
+- price: number
+- category: string
+- stock: number
+
+### 3. src/app/products/data-access/product.mapper.ts
+
+Função pura mapProductFromDTO(dto: ProductResponseDTO): ProductModel
+Mapeia: name→nome, price→preco, category→categoria, stock→estoque
+
+### 4. src/app/products/data-access/product.repository.ts
+
+Abstract class ProductRepository com métodos abstratos:
+
+- getAll(): Observable<ProductModel[]>
+- getById(id: string): Observable<ProductModel>
+  Decorator @Injectable()
+
+### 5. src/app/products/data-access/product.repository.mock.ts
+
+Class ProductRepositoryMock extends ProductRepository
+Mock com 4 produtos: Notebook Pro, Mouse Wireless, Teclado Mecânico, Monitor 4K
+Usa of() com delay(800) para simular HTTP
+
+### 6. src/app/products/data-access/index.ts
+
+Exporta tudo do data-access
+
+### 7. src/app/products/ui-product-card/product-card.component.ts
+
+Dumb component com selector ui-product-card
+
+- input.required<ProductModel>() chamado product
+- output<ProductModel>() chamado selected emitido no clique de um botão "Ver detalhe"
+- Usa MatCardModule, MatButtonModule, MatIconModule, MatChipsModule, CurrencyPipe
+- Mostra: nome, categoria como chip, preco em BRL, estoque com ícone
+- Estoque abaixo de 10 fica vermelho com classe low-stock
+- OnPush obrigatório
+- JSDoc na classe e nos inputs/outputs
+
+### 8. src/app/products/ui-product-card/index.ts
+
+Exporta ProductCardComponent
+
+### 9. src/app/products/feature-product-list/product-list.usecase.ts
+
+Class ProductListUseCase com @Injectable()
+
+- inject(ProductRepository)
+- método execute() retorna this.repository.getAll()
+- JSDoc na classe e no método
+
+### 10. src/app/products/feature-product-list/product-list-page.component.ts
+
+Smart component com selector app-product-list-page
+
+- OnPush obrigatório
+- providers: [ProductListUseCase, { provide: ProductRepository, useClass: ProductRepositoryMock }]
+- inject(ProductListUseCase) e inject(Router)
+- products = toSignal(this.useCase.execute(), { initialValue: [] })
+- total = computed(() => this.products().length)
+- loading = computed(() => this.products().length === 0)
+- onSelect(product) navega para /products/detail/:id
+- Template: título "Produtos", loading state, total de produtos, grid de ui-product-card
+- Grid com grid-template-columns: repeat(auto-fill, minmax(280px, 1fr))
+- JSDoc na classe
+
+### 11. src/app/products/feature-product-list/index.ts
+
+Exporta ProductListPageComponent
+
+### 12. src/app/app.routes.ts
+
+Routes com:
+
+- path '' carrega ShellLayoutComponent lazy de ./shell/layout/shell-layout.component
+- children:
+  - path 'products/list' carrega ProductListPageComponent lazy
+  - path '' redirectTo 'products/list' pathMatch 'full'
+
+## Regras obrigatórias
+
+- Todos os componentes são standalone: true
+- ChangeDetectionStrategy.OnPush em todos os componentes
+- Sem NgModules
+- Imports explícitos em cada componente
+- Usar CSS custom properties para estilo: var(--color-primary), var(--spacing-md), etc
+- JSDoc em todas as classes, inputs e outputs
+- Usar signals: input(), output(), signal(), computed()
+- Usar toSignal() para converter Observable em Signal no smart component
+- Abstract class para repository, nunca interface
+- Mock com delay para simular HTTP
+
+## Formato de resposta
+
+Para cada arquivo me retorne exatamente neste formato:
+
+### [caminho/do/arquivo.ts]
+
+```typescript
+[código completo]
+```
+
+Sem explicações adicionais. Só o código de cada arquivo.
