@@ -21,17 +21,16 @@ import { MatButtonModule } from '@angular/material/button';
   standalone: true,
   imports: [MatToolbarModule, MatIconModule, MatButtonModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `     <mat-toolbar [style.background]="'var(--color-toolbar-bg)'"
-                 [style.color]="'var(--color-text-on-primary)'"
-                 [style.height]="'var(--toolbar-height)'">
-      <button mat-icon-button (click)="menuClick.emit()">
-        <mat-icon>menu</mat-icon>
-      </button>
-      <span class="title">{{ title() }}</span>
-      <span class="spacer"></span>
-      <ng-content></ng-content>
-    </mat-toolbar>
-  `,
+  template: `    <mat-toolbar [style.background]="'var(--color-toolbar-bg)'"
+               [style.color]="'var(--color-text-on-primary)'"
+               [style.height]="'var(--toolbar-height)'">
+    <button mat-icon-button (click)="menuClick.emit()">
+      <mat-icon>menu</mat-icon>
+    </button>
+    <span class="title">{{ title() }}</span>
+    <span class="spacer"></span>
+    <ng-content></ng-content>
+  </mat-toolbar>`,
   styles: [`
   .title {
   font-size: var(--font-size-lg);
@@ -54,36 +53,63 @@ sidenav
 import {
 Component,
 input,
+output,
 ChangeDetectionStrategy
 } from '@angular/core';
 import { MatSidenavModule } from '@angular/material/sidenav';
 
 /\*\*
 
-- Wrapper do mat-sidenav com tokens do design system.
-- Genérico — sem conhecimento de navegação ou domínios.
+- Wrapper do mat-sidenav-container com tokens do design system.
+- Encapsula container + sidenav + content.
 - @example
-- <ds-sidenav [opened]="opened()">conteúdo</ds-sidenav>
-  _/
+- <ds-sidenav [opened]="open()">
+- <ng-container sidenav>conteúdo do menu</ng-container>
+- <ng-container content>conteúdo principal</ng-container>
+- </ds-sidenav>
+   */
   @Component({
-  selector: 'ds-sidenav',
-  standalone: true,
-  imports: [MatSidenavModule],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `     <mat-sidenav
-      [opened]="opened()"
-      [mode]="mode()"
-      [style.width]="'var(--sidenav-width)'"
-      [style.background]="'var(--color-sidenav-bg)'"
-      [style.border-right]="'1px solid var(--color-border)'">
-      <ng-content></ng-content>
-    </mat-sidenav>
-  `
+    selector: 'ds-sidenav',
+    standalone: true,
+    imports: [MatSidenavModule],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    template: `
+      <mat-sidenav-container class="container">
+        <mat-sidenav
+          [opened]="opened()"
+          [mode]="mode()"
+          class="sidenav">
+          <ng-content select="[sidenav]"></ng-content>
+        </mat-sidenav>
+
+        <mat-sidenav-content class="content">
+          <ng-content select="[content]"></ng-content>
+        </mat-sidenav-content>
+      </mat-sidenav-container>
+
+  `,
+  styles: [`
+  .container {
+  height: 100%;
+  }
+  .sidenav {
+  width: var(--sidenav-width);
+  background: var(--color-sidenav-bg);
+  border-right: 1px solid var(--color-border);
+  padding-top: var(--spacing-sm);
+  }
+  .content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--color-background);
+  }
+  `]
   })
   export class DsSidenavComponent {
-  /\*\* Controla se o sidenav está aberto _/
+  /** Controla se o sidenav está aberto \*/
   opened = input<boolean>(true);
-  /\*_ Modo do sidenav _/
+  /** Modo do sidenav \*/
   mode = input<'side' | 'over' | 'push'>('side');
   }
 
@@ -155,6 +181,7 @@ DsToolbarComponent,
 DsFooterComponent,
 ],
 template: `
+
 <div class="shell">
 <ds-toolbar
 title="POC Angular"
