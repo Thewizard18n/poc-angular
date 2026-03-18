@@ -1,0 +1,210 @@
+dumb 
+
+// src/app/products/ui-product-card/product-card.component.ts
+import {
+  Component,
+  input,
+  output,
+  ChangeDetectionStrategy
+} from '@angular/core';
+import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatChipsModule } from '@angular/material/chips';
+import { CurrencyPipe } from '@angular/common';
+import { ProductModel } from '../data-access';
+
+/**
+ * Card de produto — dumb component.
+ * Só renderiza dados recebidos via input.
+ * @example
+ * <ui-product-card [product]="product" (selected)="onSelect($event)" />
+ */
+@Component({
+  selector: 'ui-product-card',
+  standalone: true,
+  imports: [MatCardModule, MatButtonModule, MatIconModule, MatChipsModule, CurrencyPipe],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: `
+    <mat-card class="card">
+      <mat-card-header>
+        <mat-card-title>{{ product().nome }}</mat-card-title>
+        <mat-card-subtitle>
+          <mat-chip>{{ product().categoria }}</mat-chip>
+        </mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <p class="price">{{ product().preco | currency:'BRL' }}</p>
+        <p class="stock" [class.low-stock]="product().estoque < 10">
+          <mat-icon>inventory</mat-icon>
+          Estoque: {{ product().estoque }}
+        </p>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-button color="primary" (click)="selected.emit(product())">
+          <mat-icon>visibility</mat-icon>
+          Ver detalhe
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  `,
+  styles: [`
+    .card {
+      margin-bottom: var(--spacing-md);
+      border: 1px solid var(--color-border);
+    }
+    .price {
+      font-size: 20px;
+      font-weight: 500;
+      color: var(--color-primary);
+      margin: var(--spacing-sm) 0;
+    }
+    .stock {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-xs);
+      color: var(--color-text-secondary);
+      font-size: var(--font-size-md);
+    }
+    .low-stock {
+      color: #e53935;
+    }
+  `]
+})
+export class ProductCardComponent {
+  /** Produto a ser exibido */
+  product = input.required<ProductModel>();
+  /** Emite quando o usuário clica em ver detalhe */
+  selected = output<ProductModel>();
+}
+
+
+use case
+
+
+// src/app/products/feature-product-list/product-list.usecase.ts
+import { Injectable, inject } from '@angular/core';
+import { ProductRepository } from '../data-access';
+
+/**
+ * Use case de listagem de produtos.
+ */
+@Injectable()
+export class ProductListUseCase {
+  private repository = inject(ProductRepository);
+
+  execute() {
+    return this.repository.getAll();
+  }
+}
+
+
+// src/app/products/feature-product-list/product-list-page.component.ts
+import {
+  Component,
+  ChangeDetectionStrategy,
+  inject,
+  computed
+} from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { Router } from '@angular/router';
+import { ProductListUseCase } from './product-list.usecase';
+import { ProductRepository, ProductRepositoryMock, ProductModel } from '../data-access';
+import { ProductCardComponent } from '../ui-product-card';
+
+/**
+ * Página de listagem de produtos.
+ * Usa toSignal para converter Observable em Signal.
+ */
+@Component({
+  selector: 'app-product-list-page',
+  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [ProductCardComponent],
+  providers: [
+    ProductListUseCase,
+    { provide: ProductRepository, useClass: ProductRepositoryMock }
+  ],
+  template: `
+    <div class="page">
+      <h1 class="page-title">Produtos</h1>
+
+      @if (loading()) {
+        <p class="loading">Carregando produtos...</p>
+      } @else {
+        <p class="total">{{ total() }} produtos encontrados</p>
+        <div class="grid">
+          @for (product of products(); track product.id) {
+            <ui-product-card
+              [product]="product"
+              (selected)="onSelect($event)" />
+          }
+        </div>
+      }
+    </div>
+  `,
+  styles: [`
+    .page { max-width: 1200px; }
+    .page-title {
+      font-size: 24px;
+      color: var(--color-primary);
+      margin-bottom: var(--spacing-md);
+    }
+    .total {
+      color: var(--color-text-secondary);
+      font-size: var(--font-size-sm);
+      margin-bottom: var(--spacing-md);
+    }
+    .loading {
+      color: var(--color-text-secondary);
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: var(--spacing-md);
+    }
+  `]
+})
+export class ProductListPageComponent {
+  private useCase = inject(ProductListUseCase);
+  private router = inject(Router);
+
+  // toSignal — Observable → Signal
+  // sem subscribe, sem async pipe, sem memory leak
+  products = toSignal(this.useCase.execute(), { initialValue: [] });
+
+  // computed deriva do Signal automaticamente
+  total = computed(() => this.products().length);
+  loading = computed(() => this.products().length === 0);
+
+  onSelect(product: ProductModel) {
+    this.router.navigate(['/products/detail', product.id]);
+  }
+}
+
+
+// src/app/app.routes.ts
+import { Routes } from '@angular/router';
+
+export const routes: Routes = [
+  {
+    path: '',
+    loadComponent: () =>
+      import('./shell/layout/shell-layout.component')
+        .then(m => m.ShellLayoutComponent),
+    children: [
+      {
+        path: 'products/list',
+        loadComponent: () =>
+          import('./products/feature-product-list/product-list-page.component')
+            .then(m => m.ProductListPageComponent),
+      },
+      {
+        path: '',
+        redirectTo: 'products/list',
+        pathMatch: 'full'
+      }
+    ]
+  }
+];
+
