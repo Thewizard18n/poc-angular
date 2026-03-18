@@ -22,15 +22,15 @@ import { MatButtonModule } from '@angular/material/button';
   imports: [MatToolbarModule, MatIconModule, MatButtonModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `    <mat-toolbar [style.background]="'var(--color-toolbar-bg)'"
-               [style.color]="'var(--color-text-on-primary)'"
-               [style.height]="'var(--toolbar-height)'">
-    <button mat-icon-button (click)="menuClick.emit()">
-      <mat-icon>menu</mat-icon>
-    </button>
-    <span class="title">{{ title() }}</span>
-    <span class="spacer"></span>
-    <ng-content></ng-content>
-  </mat-toolbar>`,
+             [style.color]="'var(--color-text-on-primary)'"
+             [style.height]="'var(--toolbar-height)'">
+  <button mat-icon-button (click)="menuClick.emit()">
+    <mat-icon>menu</mat-icon>
+  </button>
+  <span class="title">{{ title() }}</span>
+  <span class="spacer"></span>
+  <ng-content></ng-content>
+</mat-toolbar>`,
   styles: [`
   .title {
   font-size: var(--font-size-lg);
@@ -88,7 +88,7 @@ import { MatSidenavModule } from '@angular/material/sidenav';
       </mat-sidenav-container>
 
   `,
-  styles: [`
+styles: [`
   .container {
   height: 100%;
   }
@@ -150,19 +150,19 @@ features: [
 ];
 
 // src/app/shell/layout/shell-layout.component.ts
+// src/app/shell/layout/shell-layout.component.ts
 import {
 Component,
 signal,
 ChangeDetectionStrategy
 } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
-import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatExpansionModule } from '@angular/material/expansion';
-import { DsToolbarComponent, DsFooterComponent } from '../../shared/ui';
-import { NAVIGATION, DomainNav } from '../navigation/navigation.config';
+import { DsToolbarComponent, DsSidenavComponent, DsFooterComponent } from '../../shared/ui';
+import { NAVIGATION } from '../navigation/navigation.config';
 
 @Component({
 selector: 'app-shell-layout',
@@ -172,28 +172,29 @@ imports: [
 RouterOutlet,
 RouterLink,
 RouterLinkActive,
-MatSidenavModule,
 MatListModule,
 MatIconModule,
 MatButtonModule,
 MatExpansionModule,
 DsToolbarComponent,
+DsSidenavComponent,
 DsFooterComponent,
 ],
 template: `
-
 <div class="shell">
-<ds-toolbar
-title="POC Angular"
-(menuClick)="toggleSidenav()">
-</ds-toolbar>
 
-      <mat-sidenav-container class="sidenav-container">
-        <mat-sidenav
-          [opened]="sidenavOpen()"
-          mode="side"
-          class="sidenav">
+      <ds-toolbar
+        title="POC Angular"
+        (menuClick)="toggleSidenav()">
+      </ds-toolbar>
 
+      <ds-sidenav
+        [opened]="sidenavOpen()"
+        mode="side"
+        class="sidenav-wrapper">
+
+        <!-- conteúdo do menu -->
+        <div sidenav>
           <mat-accordion [multi]="false">
             @for (domain of navigation; track domain.id) {
               <mat-expansion-panel>
@@ -217,17 +218,18 @@ title="POC Angular"
               </mat-expansion-panel>
             }
           </mat-accordion>
+        </div>
 
-        </mat-sidenav>
-
-        <mat-sidenav-content class="content">
+        <!-- conteúdo principal -->
+        <div content class="main-content">
           <main class="main">
             <router-outlet></router-outlet>
           </main>
           <ds-footer>POC Angular Moderno © 2026</ds-footer>
-        </mat-sidenav-content>
+        </div>
 
-      </mat-sidenav-container>
+      </ds-sidenav>
+
     </div>
 
 `,
@@ -237,15 +239,11 @@ display: flex;
 flex-direction: column;
 height: 100vh;
 }
-.sidenav-container {
+.sidenav-wrapper {
 flex: 1;
 overflow: hidden;
 }
-.sidenav {
-width: var(--sidenav-width);
-padding-top: var(--spacing-sm);
-}
-.content {
+.main-content {
 display: flex;
 flex-direction: column;
 height: 100%;
@@ -254,7 +252,6 @@ height: 100%;
 flex: 1;
 padding: var(--spacing-lg);
 overflow-y: auto;
-background: var(--color-background);
 }
 .domain-icon {
 margin-right: var(--spacing-sm);
