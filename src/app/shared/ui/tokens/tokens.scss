@@ -18,6 +18,53 @@
   --border-radius-sm: 4px;
   --border-radius-md: 8px;
   --border-radius-lg: 12px;
+
+    // ── Sidebar dimensions ──────────────────────────────────────
+  --ds-sidebar-width: 260px;
+  --ds-sidebar-collapsed-width: 68px;
+
+  // ── Blue palette ────────────────────────────────────────────
+  --ds-blue-950:  #050e2b;
+  --ds-blue-900:  #0a1940;
+  --ds-blue-800:  #0d2158;
+  --ds-blue-700:  #103070;
+  --ds-blue-600:  #1a47a8;
+  --ds-blue-500:  #2563eb;
+  --ds-blue-400:  #4f86f7;
+  --ds-blue-300:  #93b8fb;
+  --ds-blue-200:  #c7d9fd;
+  --ds-blue-100:  #e8f0fe;
+
+  // ── Semantic tokens ─────────────────────────────────────────
+  --ds-color-primary:      var(--ds-blue-500);
+  --ds-color-on-primary:   #ffffff;
+  --ds-color-surface:      var(--ds-blue-900);
+  --ds-color-on-surface:   #e8f0fe;
+  --ds-color-muted:        var(--ds-blue-300);
+  --ds-color-active-bg:    rgba(255, 255, 255, 0.12);
+  --ds-color-hover-bg:     rgba(255, 255, 255, 0.07);
+  --ds-color-divider:      rgba(255, 255, 255, 0.08);
+  --ds-color-danger:       #ef4444;
+
+  // ── Spacing ─────────────────────────────────────────────────
+  --ds-spacing-xs: 4px;
+  --ds-spacing-sm: 8px;
+  --ds-spacing-md: 16px;
+  --ds-spacing-lg: 24px;
+  --ds-spacing-xl: 32px;
+
+  // ── Radius ──────────────────────────────────────────────────
+  --ds-radius-sm: 6px;
+  --ds-radius-md: 10px;
+  --ds-radius-lg: 16px;
+
+  // ── Typography ──────────────────────────────────────────────
+  --ds-font-size-xs: 11px;
+  --ds-font-size-sm: 13px;
+  --ds-font-size-md: 15px;
+
+  // ── Motion ──────────────────────────────────────────────────
+  --ds-transition: 280ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 [data-partner="parceiro-a"] {

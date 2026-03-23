@@ -1,0 +1,7 @@
+// app/shell/navigation.config.ts
+
+export const navigationConfig: any[] = [
+  { label: 'Mapa',       icon: 'map',                 module: 'mapa',       route: '/mapa'      },
+  { label: 'Relatórios', icon: 'bar_chart',            module: 'relatorios', hasSub: true   ,  route: '/relatorios'     },
+  { label: 'Alertas',    icon: 'notifications_active', module: 'alertas',    route: '/alertas'   },
+];

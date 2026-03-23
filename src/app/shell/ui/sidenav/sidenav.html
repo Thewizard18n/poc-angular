@@ -1,0 +1,42 @@
+<section style="display: flex;">
+  <app-sidebar [collapsed]="collapsed()">
+  
+    <div class="ds-sidenav-header">
+      <div class="ds-sidenav-logo-mark">GS</div>
+      <div class="ds-sidenav-logo-text">
+        <strong>GeoSense</strong>
+      </div>
+      <!-- <app-sidebar-toogle
+        [collapsed]="collapsed()"
+        (toggle)="collapsed.update(v => !v)">
+      </app-sidebar-toogle> -->
+    </div>
+  
+    <nav class="ds-sidenav-nav">
+      @for (item of items; track item.module) {
+        <app-sidebar-item
+           [icon]="item.icon"
+           [label]="item.label"
+           [badge]="item.badge"
+           [active]="activeItem() === item.module"
+           [collapsed]="collapsed()"
+           (click)="onItemClicked(item)">
+        </app-sidebar-item>
+      }
+    </nav>
+  
+    <!-- <div class="ds-sidenav-footer">
+      <div class="ds-sidenav-avatar">JM</div>
+      <div class="ds-sidenav-user-info">
+        <div class="ds-sidenav-user-name">João Mendes</div>
+        <div class="ds-sidenav-user-role">Administrador</div>
+      </div>
+    </div> -->
+  
+  </app-sidebar>
+  
+  <!-- conteúdo das rotas filhas -->
+  <main class="shell-content">
+    <router-outlet />
+  </main>
+</section>

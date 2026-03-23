@@ -5,7 +5,7 @@ import {
   ChangeDetectionStrategy,
   signal
 } from '@angular/core';
-import { DsButton } from '../../../shared/ui';
+import { DsButton } from '../../../../shared/ui';
 
 /**
  * componente de card para renderizar texto de smart component.
