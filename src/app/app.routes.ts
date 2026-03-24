@@ -11,11 +11,11 @@ export const routes: Routes = [
 
       {
         path: 'mapa',
-        loadChildren: () => import('./domains/mapa/feature-dashboard/feature.routes').then(m => m.featureDashboardRoutes),
+        loadChildren: () => import('./domains/mapa/mapa.routes').then(m => m.featureDashboardRoutes),
       },
       {
         path: 'relatorios',
-        loadChildren: () => import('./domains/relatorios/features/feature.routes').then(m => m.relatoriosRoutes),
+        loadChildren: () => import('./domains/relatorios/relatorios.routes').then(m => m.relatoriosRoutes),
       },
     ],
   },

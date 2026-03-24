@@ -1,0 +1,15 @@
+{
+  "$schema": "../node_modules/@angular-devkit/schematics/collection-schema.json",
+  "schematics": {
+    "domain": {
+      "description": "Create a domain folder structure and add navigation item",
+      "factory": "./domain/index#default",
+      "schema": "./domain/schema.json"
+    },
+    "feature": {
+      "description": "Create a feature and register in domain routes",
+      "factory": "./feature/index#default",
+      "schema": "./feature/schema.json"
+    }
+  }
+}

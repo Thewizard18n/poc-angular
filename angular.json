@@ -4,6 +4,7 @@
   "cli": {
     "packageManager": "npm",
     "schematicCollections": [
+      "./tools/schematics/collection.json",
       "angular-eslint"
     ]
   },

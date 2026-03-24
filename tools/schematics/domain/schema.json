@@ -1,0 +1,27 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "$id": "DomainSchematic",
+  "title": "Domain options",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Domain name"
+    },
+    "label": {
+      "type": "string",
+      "description": "Menu label shown in navigation"
+    },
+    "icon": {
+      "type": "string",
+      "description": "Material icon name used in navigation",
+      "default": "folder"
+    },
+    "hasSub": {
+      "type": "boolean",
+      "description": "Whether the menu item has sub navigation",
+      "default": false
+    }
+  },
+  "required": ["name"]
+}

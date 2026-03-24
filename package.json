@@ -3,6 +3,8 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
+    "domain": "ng g ./tools/schematics/collection.json:domain",
+    "feature": "ng g ./tools/schematics/collection.json:feature",
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
