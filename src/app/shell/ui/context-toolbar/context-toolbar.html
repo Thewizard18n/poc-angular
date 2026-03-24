@@ -1,0 +1,32 @@
+@if (tabs().length) {
+  <div class="context-toolbar">
+    <nav mat-tab-nav-bar [tabPanel]="tabPanel">
+      @for (tab of tabs(); track tab.label) {
+        @if (isLink(tab)) {
+          <a mat-tab-link [routerLink]="tab.route" [active]="isRouteActive(tab.route)">
+            {{ tab.label }}
+          </a>
+        } @else if (isGroup(tab)) {
+          <a
+            mat-tab-link
+            href=""
+            [active]="isGroupActive(tab)"
+            [matMenuTriggerFor]="groupMenu"
+            (click)="$event.preventDefault()"
+          >
+            {{ tab.label }}
+            <mat-icon class="context-toolbar__menu-icon">arrow_drop_down</mat-icon>
+          </a>
+          <mat-menu #groupMenu="matMenu">
+            @for (child of tab.children; track child.route) {
+              <button mat-menu-item [routerLink]="child.route">
+                {{ child.label }}
+              </button>
+            }
+          </mat-menu>
+        }
+      }
+    </nav>
+    <mat-tab-nav-panel #tabPanel />
+  </div>
+}

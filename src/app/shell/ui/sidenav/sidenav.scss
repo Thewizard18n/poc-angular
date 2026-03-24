@@ -1,1 +1,6 @@
 @use '../../../shared/ui/sidebar/sidebar.scss' as *;
+
+.shell-content {
+  flex: 1;
+  min-width: 0;
+}

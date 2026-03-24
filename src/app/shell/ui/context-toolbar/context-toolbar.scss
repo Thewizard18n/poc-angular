@@ -1,0 +1,22 @@
+.context-toolbar {
+  display: flex;
+  justify-content: flex-start;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+  padding: 0 12px;
+  background: #fff;
+}
+
+nav[mat-tab-nav-bar] {
+  display: inline-flex;
+  width: auto;
+  min-width: 0;
+}
+
+/* Keep Angular Material tab links sized by content, not full width. */
+:host ::ng-deep .mat-mdc-tab-links {
+  flex: 0 0 auto;
+}
+
+.context-toolbar__menu-icon {
+  margin-left: 4px;
+}

@@ -7,7 +7,7 @@ export const routes: Routes = [
     component: Sidenav,   // layout com as sidebars
     children: [
 
-      { path: '', redirectTo: 'mapa ', pathMatch: 'full' },
+      { path: '', redirectTo: 'mapa', pathMatch: 'full' },
 
       {
         path: 'mapa',
