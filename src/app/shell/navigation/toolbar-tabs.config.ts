@@ -33,4 +33,16 @@ export const toolbarTabsConfig: Record<string, ToolbarTab[]> = {
       children: [{ type: 'link', label: 'Teste', route: '/relatorios/teste' }],
     },
   ],
+
+  'financeiro': [
+    { type: 'link', label: 'Veiculos', route: '/financeiro/veiculos' }
+,
+    {
+      type: 'group',
+      label: 'pagamentos',
+      children: [{ type: 'link', label: 'Resumo', route: '/financeiro/resumo' },
+        { type: 'link', label: 'Teste', route: '/financeiro/teste' }
+],
+    }
+]
 };

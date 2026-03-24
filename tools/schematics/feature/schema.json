@@ -16,6 +16,10 @@
       "type": "string",
       "description": "Path used in <domain>.routes.ts for this feature route"
     },
+    "group": {
+      "type": "string",
+      "description": "Toolbar tab group label to include this feature"
+    },
     "withRoutes": {
       "type": "boolean",
       "description": "Create feature routes file and register as loadChildren",
