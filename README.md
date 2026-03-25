@@ -57,3 +57,63 @@ Angular CLI does not come with an end-to-end testing framework by default. You c
 ## Additional Resources
 
 For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+
+## Schematics customizados
+
+Este projeto possui schematics locais registrados no Angular CLI.
+
+### Comandos de dominio
+
+Criar dominio:
+
+```bash
+ng g domain --name <nome-do-dominio>
+```
+
+Opcoes:
+
+- `--label "<texto>"` define o label do menu lateral
+- `--icon "<material-icon>"` define icone do menu lateral
+- `--has-sub` marca item com submenu
+
+Exemplo:
+
+```bash
+ng g domain --name financeiro --label "Financeiro" --icon "payments" --has-sub
+```
+
+### Comandos de feature
+
+Criar feature simples:
+
+```bash
+ng g feature --name <nome-da-feature> --domain <nome-do-dominio>
+```
+
+Criar feature com rotas internas:
+
+```bash
+ng g feature --name <nome-da-feature> --domain <nome-do-dominio> --with-routes
+```
+
+Opcoes:
+
+- `--route-path <path>` define o path da rota no `<domain>.routes.ts`
+- `--group "<nome-do-grupo>"` adiciona a feature em um grupo de tabs da toolbar (cria o grupo se nao existir)
+- `--repository <arquivo-ou-classe>` escolhe o repository para injetar no usecase
+
+Exemplos:
+
+```bash
+ng g feature --name veiculos --domain relatorios
+ng g feature --name passagens --domain relatorios --with-routes
+ng g feature --name analitico --domain financeiro --group "Indicadores"
+ng g feature --name aprovar --domain financeiro --repository financeiro-api-mock
+```
+
+### Testar sem gerar arquivos
+
+```bash
+ng g domain --name compras --dry-run
+ng g feature --name resumo --domain financeiro --dry-run
+```
