@@ -44,6 +44,14 @@ describe('${className}', () => {
 }
 
 function buildUsecaseFile(usecaseClassName, repositoryClassName) {
+  if (!repositoryClassName) {
+    return `import { Injectable } from '@angular/core';
+
+@Injectable({ providedIn: 'root' })
+export class ${usecaseClassName} {}
+`;
+  }
+
   return `import { inject, Injectable } from '@angular/core';
 import { ${repositoryClassName} } from '../../data-access';
 
@@ -244,6 +252,8 @@ function createFeatureSchematic(options) {
     const usecasePath = `${featureRoot}/${featureName}-usecase.ts`;
     const indexPath = `${featureRoot}/index.ts`;
     const featureRoutesPath = `${featureRoot}/${featureName}.routes.ts`;
+    const repositoryFilePath = `${domainRoot}/data-access/${repositoryName}.ts`;
+    const hasRepository = tree.exists(repositoryFilePath);
 
     if (!tree.exists(componentTsPath)) {
       tree.create(
@@ -261,7 +271,10 @@ function createFeatureSchematic(options) {
       tree.create(componentSpecPath, buildComponentSpecFile(featureName, featureClassName));
     }
     if (!tree.exists(usecasePath)) {
-      tree.create(usecasePath, buildUsecaseFile(usecaseClassName, repositoryClassName));
+      tree.create(
+        usecasePath,
+        buildUsecaseFile(usecaseClassName, hasRepository ? repositoryClassName : null),
+      );
     }
 
     if (withRoutes) {
