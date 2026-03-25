@@ -1,6 +1,6 @@
 .context-toolbar {
   display: flex;
-  justify-content: flex-start;
+  align-items: center;
   border-bottom: 1px solid rgba(0, 0, 0, 0.12);
   padding: 0 12px;
   background: #fff;
@@ -15,6 +15,23 @@ nav[mat-tab-nav-bar] {
 /* Keep Angular Material tab links sized by content, not full width. */
 :host ::ng-deep .mat-mdc-tab-links {
   flex: 0 0 auto;
+}
+
+.context-toolbar__spacer {
+  flex: 1;
+}
+
+.context-toolbar__logo {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-width: 120px;
+}
+
+.context-toolbar__logo img {
+  height: 28px;
+  width: auto;
+  object-fit: contain;
 }
 
 .context-toolbar__menu-icon {
