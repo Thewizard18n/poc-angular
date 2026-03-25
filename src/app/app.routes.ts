@@ -21,7 +21,16 @@ export const routes: Routes = [
         path: 'financeiro',
         loadChildren: () => import('./domains/financeiro/financeiro.routes').then(m => m.financeiroRoutes),
       },
+      {
+        path: 'compras',
+        loadChildren: () => import('./domains/compras/compras.routes').then(m => m.comprasRoutes),
+      },
 
-    ],
+    
+      {
+        path: 'estoque',
+        loadChildren: () => import('./domains/estoque/estoque.routes').then((m) => m.estoqueRoutes),
+      }
+],
   },
 ];

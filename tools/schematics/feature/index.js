@@ -1,8 +1,9 @@
 const { strings } = require('@angular-devkit/core');
 const { SchematicsException } = require('@angular-devkit/schematics');
 
-function buildComponentFile(featureName, className) {
-  return `import { Component } from '@angular/core';
+function buildComponentFile(featureName, className, usecaseClassName) {
+  return `import { Component, inject } from '@angular/core';
+import { ${usecaseClassName} } from './${featureName}-usecase';
 
 @Component({
   selector: 'app-${featureName}',
@@ -10,7 +11,9 @@ function buildComponentFile(featureName, className) {
   templateUrl: './${featureName}.html',
   styleUrl: './${featureName}.scss',
 })
-export class ${className} {}
+export class ${className} {
+  protected readonly usecase = inject(${usecaseClassName});
+}
 `;
 }
 
@@ -37,6 +40,17 @@ describe('${className}', () => {
     expect(component).toBeTruthy();
   });
 });
+`;
+}
+
+function buildUsecaseFile(usecaseClassName, repositoryClassName) {
+  return `import { inject, Injectable } from '@angular/core';
+import { ${repositoryClassName} } from '../../data-access';
+
+@Injectable({ providedIn: 'root' })
+export class ${usecaseClassName} {
+  protected readonly repository = inject(${repositoryClassName});
+}
 `;
 }
 
@@ -210,9 +224,14 @@ function createFeatureSchematic(options) {
 
     const featureName = strings.dasherize(options.name);
     const featureClassName = strings.classify(options.name);
+    const usecaseClassName = `${strings.classify(options.name)}Usecase`;
     const domainName = strings.dasherize(options.domain);
     const routePath = options.routePath === '' ? '' : strings.dasherize(options.routePath || featureName);
     const group = options.group?.trim() || '';
+    const repositoryName = options.repository
+      ? strings.dasherize(options.repository)
+      : `${domainName}-repository`;
+    const repositoryClassName = strings.classify(repositoryName);
     const withRoutes = options.withRoutes === true;
 
     const domainRoot = `src/app/domains/${domainName}`;
@@ -222,11 +241,15 @@ function createFeatureSchematic(options) {
     const componentHtmlPath = `${featureRoot}/${featureName}.html`;
     const componentScssPath = `${featureRoot}/${featureName}.scss`;
     const componentSpecPath = `${featureRoot}/${featureName}.spec.ts`;
+    const usecasePath = `${featureRoot}/${featureName}-usecase.ts`;
     const indexPath = `${featureRoot}/index.ts`;
     const featureRoutesPath = `${featureRoot}/${featureName}.routes.ts`;
 
     if (!tree.exists(componentTsPath)) {
-      tree.create(componentTsPath, buildComponentFile(featureName, featureClassName));
+      tree.create(
+        componentTsPath,
+        buildComponentFile(featureName, featureClassName, usecaseClassName),
+      );
     }
     if (!tree.exists(componentHtmlPath)) {
       tree.create(componentHtmlPath, `<p>${featureName} works!</p>\n`);
@@ -236,6 +259,9 @@ function createFeatureSchematic(options) {
     }
     if (!tree.exists(componentSpecPath)) {
       tree.create(componentSpecPath, buildComponentSpecFile(featureName, featureClassName));
+    }
+    if (!tree.exists(usecasePath)) {
+      tree.create(usecasePath, buildUsecaseFile(usecaseClassName, repositoryClassName));
     }
 
     if (withRoutes) {

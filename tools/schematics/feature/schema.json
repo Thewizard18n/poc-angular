@@ -20,6 +20,10 @@
       "type": "string",
       "description": "Toolbar tab group label to include this feature"
     },
+    "repository": {
+      "type": "string",
+      "description": "Repository class/file name from data-access to inject in usecase"
+    },
     "withRoutes": {
       "type": "boolean",
       "description": "Create feature routes file and register as loadChildren",

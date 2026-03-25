@@ -45,4 +45,16 @@ export const toolbarTabsConfig: Record<string, ToolbarTab[]> = {
 ],
     }
 ]
+,
+  'compras': [
+    { type: 'link', label: 'Consultar', route: '/compras/consultar' }
+,
+    {
+      type: 'group',
+      label: 'Operacoes',
+      children: [{ type: 'link', label: 'Aprovar', route: '/compras/aprovar' }],
+    }
+]
+,
+  'estoque': []
 };
