@@ -1,4 +1,4 @@
-<section style="display: flex;">
+<section class="shell-layout">
   <app-sidebar [collapsed]="collapsed()">
   
     <div class="ds-sidenav-header">
@@ -38,6 +38,8 @@
   <!-- conteúdo das rotas filhas -->
   <main class="shell-content">
     <app-context-toolbar [module]="activeItem()" />
-    <router-outlet />
+    <div class="shell-content__body">
+      <router-outlet />
+    </div>
   </main>
 </section>
