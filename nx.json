@@ -27,5 +27,15 @@
       "cache": true
     }
   },
-  "analytics": true
+  "analytics": true,
+  "generators": {
+    "@nx/angular:library": {
+      "linter": "none",
+      "unitTestRunner": "none",
+      "strict": false
+    },
+    "@nx/angular:component": {
+      "style": "css"
+    }
+  }
 }

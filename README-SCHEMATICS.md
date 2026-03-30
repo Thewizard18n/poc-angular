@@ -1,13 +1,13 @@
-# Schematics locais (Angular CLI)
+# Generators locais (Nx)
 
-Este projeto possui uma collection local de schematics em `tools/schematics/collection.json`.
+Este projeto possui uma collection local de generators em `tools/generators/generators.json`.
 
 ## Comandos disponiveis (sem scripts npm)
 
 ### 1) Criar dominio
 
 ```bash
-ng g domain --name <nome-do-dominio>
+nx g ./tools/generators/generators.json:domain --name <nome-do-dominio>
 ```
 
 Opcoes:
@@ -19,62 +19,68 @@ Opcoes:
 Exemplos:
 
 ```bash
-ng g domain --name relatorios
-ng g domain --name financeiro --label "Financeiro" --icon "payments"
-ng g domain --name alertas --has-sub
+nx g ./tools/generators/generators.json:domain --name relatorios
+nx g ./tools/generators/generators.json:domain --name financeiro --label "Financeiro" --icon "payments"
+nx g ./tools/generators/generators.json:domain --name alertas --has-sub
 ```
 
-O schematic `domain` cria:
+O generator `domain` cria:
 
-- `src/app/domains/<domain>/data-access/.gitkeep`
-- `src/app/domains/<domain>/features/.gitkeep`
-- `src/app/domains/<domain>/ui/.gitkeep`
-- `src/app/domains/<domain>/<domain>.routes.ts`
-- novo item no `src/app/shell/navigation/navigation.config.ts`
+- `libs/domains/<domain>/data-access` como library Nx
+- `libs/domains/<domain>/data-access/src/index.ts`
+- `libs/domains/<domain>/data-access/src/lib/<domain>-repository.ts`
+- `libs/domains/<domain>/data-access/src/lib/<domain>-api.ts`
+- `libs/domains/<domain>/data-access/src/lib/<domain>-api.spec.ts`
+- `libs/domains/<domain>/data-access/src/lib/<domain>-api-mock.ts`
+- `libs/domains/<domain>/features/.gitkeep`
+- `libs/domains/<domain>/ui/.gitkeep`
+- `libs/domains/<domain>/<domain>.routes.ts`
+- novo item no `apps/poc-angular-moderno/src/app/shell/navigation/navigation.config.ts`
+- rota no `apps/poc-angular-moderno/src/app/app.routes.ts`
 
 ---
 
 ### 2) Criar feature simples
 
 ```bash
-ng g feature --name <nome-da-feature> --domain <nome-do-dominio>
+nx g ./tools/generators/generators.json:feature --name <nome-da-feature> --domain <nome-do-dominio>
 ```
 
 Exemplo:
 
 ```bash
-ng g feature --name veiculos --domain relatorios
+nx g ./tools/generators/generators.json:feature --name veiculos --domain relatorios
 ```
 
-Cria:
+Cria a feature como library Nx e continua gerando:
 
-- `features/<feature>/<feature>.ts`
-- `features/<feature>/<feature>.html`
-- `features/<feature>/<feature>.scss`
-- `features/<feature>/<feature>.spec.ts`
-- `features/<feature>/index.ts` (exporta o componente)
-- adiciona rota no `src/app/domains/<domain>/<domain>.routes.ts` via `loadComponent` importando `./features/<feature>`
+- `features/<feature>/src/lib/<feature>.ts`
+- `features/<feature>/src/lib/<feature>.html`
+- `features/<feature>/src/lib/<feature>.scss`
+- `features/<feature>/src/lib/<feature>.spec.ts`
+- `features/<feature>/src/index.ts` (exporta o componente)
+- adiciona rota no `libs/domains/<domain>/<domain>.routes.ts` via `loadComponent` importando `./features/<feature>/src`
 
 ---
 
 ### 3) Criar feature com rotas filhas
 
 ```bash
-ng g feature --name <nome-da-feature> --domain <nome-do-dominio> --with-routes
+nx g ./tools/generators/generators.json:feature --name <nome-da-feature> --domain <nome-do-dominio> --with-routes
 ```
 
 Exemplo:
 
 ```bash
-ng g feature --name passagens --domain relatorios --with-routes
+nx g ./tools/generators/generators.json:feature --name passagens --domain relatorios --with-routes
 ```
 
 Cria:
 
 - todos os arquivos da feature simples
-- `features/<feature>/<feature>.routes.ts`
-- `features/<feature>/index.ts` (exporta as rotas)
-- adiciona rota no `src/app/domains/<domain>/<domain>.routes.ts` via `loadChildren` importando `./features/<feature>`
+- `features/<feature>/src/lib/<feature>.routes.ts`
+- `features/<feature>/src/index.ts` (exporta as rotas)
+- adiciona rota no `libs/domains/<domain>/<domain>.routes.ts` via `loadChildren` importando `./features/<feature>/src`
 
 Opcao adicional:
 
@@ -85,65 +91,57 @@ Opcao adicional:
 ### 4) Testar sem gerar arquivos (recomendado)
 
 ```bash
-ng g domain --name financeiro --dry-run
-ng g feature --name veiculos --domain relatorios --dry-run
-ng g feature --name passagens --domain relatorios --with-routes --dry-run
+nx g ./tools/generators/generators.json:domain --name financeiro
+nx g ./tools/generators/generators.json:feature --name veiculos --domain relatorios
+nx g ./tools/generators/generators.json:feature --name passagens --domain relatorios --with-routes
 ```
 
-## Como criar esses schematics em outra aplicacao Angular
+## Como criar esses generators em outra aplicacao Angular
 
 ### Passo 1: criar estrutura de pastas
 
 No projeto destino:
 
 ```bash
-mkdir -p tools/schematics/domain
-mkdir -p tools/schematics/feature
+mkdir -p tools/generators/domain
+mkdir -p tools/generators/feature
 ```
 
 ### Passo 2: adicionar arquivos da collection
 
 Copie estes arquivos deste projeto para o projeto destino:
 
-- `tools/schematics/collection.json`
-- `tools/schematics/domain/schema.json`
-- `tools/schematics/domain/index.js`
-- `tools/schematics/feature/schema.json`
-- `tools/schematics/feature/index.js`
+- `tools/generators/generators.json`
+- `tools/generators/domain/schema.json`
+- `tools/generators/domain/index.js`
+- `tools/generators/feature/schema.json`
+- `tools/generators/feature/index.js`
 
-### Passo 3: registrar a collection no `angular.json`
+### Passo 3: executar os generators locais
 
-Em `angular.json`, adicionar no bloco `cli.schematicCollections`:
+Use `nx g` apontando para a pasta:
 
-```json
-"cli": {
-  "schematicCollections": [
-    "./tools/schematics/collection.json",
-    "angular-eslint"
-  ]
-}
+```bash
+nx g ./tools/generators/generators.json:domain --name exemplo
+nx g ./tools/generators/generators.json:feature --name lista --domain exemplo
 ```
-
-Se seu projeto nao usa `angular-eslint`, mantenha apenas as collections que voce usa.
 
 ### Passo 4: garantir arquivos esperados no app destino
 
 Os schematics assumem estes caminhos:
 
-- `src/app/shell/navigation/navigation.config.ts` (usado por `domain`)
-- `src/app/domains/<domain>/<domain>.routes.ts` (usado por `feature`)
+- `apps/poc-angular-moderno/src/app/shell/navigation/navigation.config.ts` (usado por `domain`)
+- `libs/domains/<domain>/<domain>.routes.ts` (usado por `feature`)
 
 Se sua estrutura for diferente, ajuste os caminhos nos arquivos:
 
-- `tools/schematics/domain/index.js`
-- `tools/schematics/feature/index.js`
+- `tools/generators/domain/index.js`
+- `tools/generators/feature/index.js`
 
 ### Passo 5: validar no projeto destino
 
 ```bash
-ng g domain --name exemplo --dry-run
-ng g feature --name lista --domain exemplo --dry-run
-ng g feature --name detalhe --domain exemplo --with-routes --dry-run
+nx g ./tools/generators/generators.json:domain --name exemplo
+nx g ./tools/generators/generators.json:feature --name lista --domain exemplo
+nx g ./tools/generators/generators.json:feature --name detalhe --domain exemplo --with-routes
 ```
-
-Se o `dry-run` estiver correto, execute sem `--dry-run`.

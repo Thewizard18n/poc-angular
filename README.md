@@ -58,16 +58,16 @@ Angular CLI does not come with an end-to-end testing framework by default. You c
 
 For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
 
-## Schematics customizados
+## Generators customizados
 
-Este projeto possui schematics locais registrados no Angular CLI.
+Este projeto possui generators locais Nx.
 
 ### Comandos de dominio
 
 Criar dominio:
 
 ```bash
-ng g domain --name <nome-do-dominio>
+nx g ./tools/generators/generators.json:domain --name <nome-do-dominio>
 ```
 
 Opcoes:
@@ -79,7 +79,7 @@ Opcoes:
 Exemplo:
 
 ```bash
-ng g domain --name financeiro --label "Financeiro" --icon "payments" --has-sub
+nx g ./tools/generators/generators.json:domain --name financeiro --label "Financeiro" --icon "payments" --has-sub
 ```
 
 ### Comandos de feature
@@ -87,13 +87,13 @@ ng g domain --name financeiro --label "Financeiro" --icon "payments" --has-sub
 Criar feature simples:
 
 ```bash
-ng g feature --name <nome-da-feature> --domain <nome-do-dominio>
+nx g ./tools/generators/generators.json:feature --name <nome-da-feature> --domain <nome-do-dominio>
 ```
 
 Criar feature com rotas internas:
 
 ```bash
-ng g feature --name <nome-da-feature> --domain <nome-do-dominio> --with-routes
+nx g ./tools/generators/generators.json:feature --name <nome-da-feature> --domain <nome-do-dominio> --with-routes
 ```
 
 Opcoes:
@@ -105,15 +105,15 @@ Opcoes:
 Exemplos:
 
 ```bash
-ng g feature --name veiculos --domain relatorios
-ng g feature --name passagens --domain relatorios --with-routes
-ng g feature --name analitico --domain financeiro --group "Indicadores"
-ng g feature --name aprovar --domain financeiro --repository financeiro-api-mock
+nx g ./tools/generators/generators.json:feature --name veiculos --domain relatorios
+nx g ./tools/generators/generators.json:feature --name passagens --domain relatorios --with-routes
+nx g ./tools/generators/generators.json:feature --name analitico --domain financeiro --group "Indicadores"
+nx g ./tools/generators/generators.json:feature --name aprovar --domain financeiro --repository financeiro-api-mock
 ```
 
 ### Testar sem gerar arquivos
 
 ```bash
-ng g domain --name compras --dry-run
-ng g feature --name resumo --domain financeiro --dry-run
+nx g ./tools/generators/generators.json:domain --name compras
+nx g ./tools/generators/generators.json:feature --name resumo --domain financeiro
 ```

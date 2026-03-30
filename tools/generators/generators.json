@@ -1,0 +1,15 @@
+{
+  "$schema": "../../node_modules/nx/schemas/generators-schema.json",
+  "generators": {
+    "domain": {
+      "description": "Create a domain structure and register shell navigation/route",
+      "factory": "./domain/index#domainGenerator",
+      "schema": "./domain/schema.json"
+    },
+    "feature": {
+      "description": "Create a feature library and register domain route/tab",
+      "factory": "./feature/index#featureGenerator",
+      "schema": "./feature/schema.json"
+    }
+  }
+}

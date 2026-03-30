@@ -1,0 +1,34 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "$id": "FeatureGenerator",
+  "title": "Feature options",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Feature name"
+    },
+    "domain": {
+      "type": "string",
+      "description": "Domain name where the feature will be created"
+    },
+    "routePath": {
+      "type": "string",
+      "description": "Path used in <domain>.routes.ts for this feature route"
+    },
+    "group": {
+      "type": "string",
+      "description": "Toolbar tab group label to include this feature"
+    },
+    "repository": {
+      "type": "string",
+      "description": "Repository class/file name from data-access to inject in usecase"
+    },
+    "withRoutes": {
+      "type": "boolean",
+      "description": "Create feature routes file and register as loadChildren",
+      "default": false
+    }
+  },
+  "required": ["name", "domain"]
+}

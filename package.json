@@ -3,8 +3,8 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "domain": "nx g ./tools/schematics/collection.json:domain",
-    "feature": "nx g ./tools/schematics/collection.json:feature",
+    "domain": "nx g ./tools/generators/generators.json:domain",
+    "feature": "nx g ./tools/generators/generators.json:feature",
     "start": "nx serve",
     "build": "nx build",
     "watch": "nx build --watch --configuration development",
