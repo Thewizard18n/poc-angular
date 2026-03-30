@@ -143,6 +143,45 @@ function findProjectByRoot(tree, root) {
   return Array.from(projects.entries()).find(([, project]) => project.root === root);
 }
 
+function ensureProjectTags(tree, projectJsonPath, tags) {
+  if (!tree.exists(projectJsonPath)) {
+    return;
+  }
+
+  const projectJsonBuffer = tree.read(projectJsonPath);
+  if (!projectJsonBuffer) {
+    throw new Error(`Could not read: ${projectJsonPath}`);
+  }
+
+  const projectJson = JSON.parse(projectJsonBuffer.toString('utf-8'));
+  projectJson.tags = tags;
+  tree.write(projectJsonPath, `${JSON.stringify(projectJson, null, 2)}\n`);
+}
+
+function ensureDomainConstraintInEslintConfig(source, domainName) {
+  const sourceTagNeedle = `sourceTag: 'domain:${domainName}'`;
+  if (source.includes(sourceTagNeedle)) {
+    return source;
+  }
+
+  const depConstraintsIndex = source.indexOf('depConstraints');
+  if (depConstraintsIndex === -1) {
+    throw new Error('Could not find depConstraints in eslint.config.js.');
+  }
+
+  const depConstraintsOpenBracketIndex = source.indexOf('[', depConstraintsIndex);
+  if (depConstraintsOpenBracketIndex === -1) {
+    throw new Error('Could not find depConstraints array in eslint.config.js.');
+  }
+
+  const domainConstraintEntry = `{
+              sourceTag: 'domain:${domainName}',
+              onlyDependOnLibsWithTags: ['domain:${domainName}', 'domain:shared'],
+            }`;
+
+  return insertInArray(source, depConstraintsOpenBracketIndex, domainConstraintEntry, '            ');
+}
+
 async function ensureLibraryAtRoot(tree, root, projectName) {
   const existingProject = findProjectByRoot(tree, root);
   if (existingProject) {
@@ -244,6 +283,10 @@ async function domainGenerator(tree, options) {
   const apiMockClassName = `${strings.classify(options.name)}ApiMock`;
 
   await ensureLibraryAtRoot(tree, dataAccessRoot, `${domainName}-data-access`);
+  ensureProjectTags(tree, `${dataAccessRoot}/project.json`, [
+    `domain:${domainName}`,
+    'type:data-access',
+  ]);
 
   const dataAccessLibRoot = `${dataAccessRoot}/src/lib`;
   const repositoryPath = `${dataAccessLibRoot}/${domainName}-repository.ts`;
@@ -386,6 +429,22 @@ async function domainGenerator(tree, options) {
   );
   if (updatedAppRoutesSource !== appRoutesSource) {
     tree.write(appRoutesPath, updatedAppRoutesSource);
+  }
+
+  const eslintConfigPath = 'eslint.config.js';
+  if (!tree.exists(eslintConfigPath)) {
+    throw new Error(`File not found: ${eslintConfigPath}`);
+  }
+
+  const eslintConfigBuffer = tree.read(eslintConfigPath);
+  if (!eslintConfigBuffer) {
+    throw new Error(`Could not read: ${eslintConfigPath}`);
+  }
+
+  const eslintConfigSource = eslintConfigBuffer.toString('utf-8');
+  const updatedEslintConfigSource = ensureDomainConstraintInEslintConfig(eslintConfigSource, domainName);
+  if (updatedEslintConfigSource !== eslintConfigSource) {
+    tree.write(eslintConfigPath, updatedEslintConfigSource);
   }
 
   await formatFiles(tree);

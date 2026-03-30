@@ -48,6 +48,7 @@
     "@compodoc/compodoc": "^1.2.1",
     "@eslint/js": "^9.39.4",
     "@nx/angular": "22.6.3",
+    "@nx/eslint-plugin": "^22.6.3",
     "@nx/js": "22.6.3",
     "@nx/workspace": "22.6.3",
     "@schematics/angular": "^21.1.4",

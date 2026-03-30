@@ -238,6 +238,21 @@ function findProjectByRoot(tree, root) {
   return Array.from(projects.entries()).find(([, project]) => project.root === root);
 }
 
+function ensureProjectTags(tree, projectJsonPath, tags) {
+  if (!tree.exists(projectJsonPath)) {
+    return;
+  }
+
+  const projectJsonBuffer = tree.read(projectJsonPath);
+  if (!projectJsonBuffer) {
+    throw new Error(`Could not read: ${projectJsonPath}`);
+  }
+
+  const projectJson = JSON.parse(projectJsonBuffer.toString('utf-8'));
+  projectJson.tags = tags;
+  tree.write(projectJsonPath, `${JSON.stringify(projectJson, null, 2)}\n`);
+}
+
 async function ensureLibraryAtRoot(tree, root, projectName) {
   const existingProject = findProjectByRoot(tree, root);
   if (existingProject) {
@@ -293,6 +308,7 @@ async function featureGenerator(tree, options) {
   const featureProjectName = `${domainName}-${featureName}-feature`;
 
   await ensureLibraryAtRoot(tree, featureRoot, featureProjectName);
+  ensureProjectTags(tree, `${featureRoot}/project.json`, [`domain:${domainName}`, 'type:feature']);
 
   const featureLibRoot = `${featureRoot}/src/lib`;
   const componentTsPath = `${featureLibRoot}/${featureName}.ts`;
