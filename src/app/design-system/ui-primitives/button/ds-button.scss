@@ -1,0 +1,50 @@
+:host {
+  display: inline-flex;
+  max-width: 100%;
+}
+
+.ds-button {
+  border-radius: var(--ds-radius-pill);
+  transition: opacity var(--ds-transition-fast);
+}
+
+.ds-button--sm {
+  min-height: 32px;
+  padding-inline: var(--ds-spacing-sm);
+}
+
+.ds-button--md {
+  min-height: 40px;
+  padding-inline: var(--ds-spacing-md);
+}
+
+.ds-button--lg {
+  min-height: 48px;
+  padding-inline: var(--ds-spacing-lg);
+}
+
+.ds-button--full {
+  width: 100%;
+}
+
+.ds-button--tonal {
+  --mdc-filled-button-container-color: var(--ds-color-tonal);
+  --mdc-filled-button-label-text-color: var(--ds-color-on-tonal);
+}
+
+.ds-button--secondary {
+  --mdc-outlined-button-label-text-color: var(--ds-color-on-surface);
+  --mdc-outlined-button-outline-color: var(--ds-color-outline);
+}
+
+.ds-button--text {
+  --mdc-text-button-label-text-color: var(--ds-color-primary);
+}
+
+.ds-button__spinner {
+  margin-right: var(--ds-spacing-xs);
+}
+
+.ds-button__label {
+  font: var(--ds-typography-label-large);
+}

@@ -1,0 +1,15 @@
+@use './dimension-tokens' as dimensions;
+@use './helpers' as helpers;
+@use './typography-tokens' as typography;
+
+@mixin ds-theme-light() {
+  @include dimensions.dimension-tokens();
+  @include typography.typography-tokens();
+  @include helpers.compatibility-aliases();
+}
+
+@mixin ds-theme-dark() {
+  @include dimensions.dimension-tokens();
+  @include typography.typography-tokens();
+  @include helpers.compatibility-aliases();
+}

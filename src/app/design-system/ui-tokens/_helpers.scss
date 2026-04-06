@@ -1,0 +1,22 @@
+@mixin compatibility-aliases() {
+  /* Legacy aliases to keep current screens stable while migrating. */
+  --color-primary: var(--ds-color-primary);
+  --color-accent: var(--ds-color-secondary);
+  --color-background: var(--ds-color-surface);
+  --color-surface: var(--ds-color-surface-container);
+  --color-text-primary: var(--ds-color-on-surface);
+  --color-text-secondary: var(--ds-color-on-surface-variant);
+  --color-border: var(--ds-color-outline);
+
+  --font-family-base: var(--ds-font-family-base);
+
+  --spacing-xs: var(--ds-spacing-xs);
+  --spacing-sm: var(--ds-spacing-sm);
+  --spacing-md: var(--ds-spacing-md);
+  --spacing-lg: var(--ds-spacing-lg);
+  --spacing-xl: var(--ds-spacing-xl);
+
+  --border-radius-sm: var(--ds-radius-sm);
+  --border-radius-md: var(--ds-radius-md);
+  --border-radius-lg: var(--ds-radius-lg);
+}

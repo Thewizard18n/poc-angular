@@ -1,1 +1,29 @@
-<p>passagens works!</p>
+<section class="passagens-page" aria-label="Relatório de passagens">
+  <div class="passagens-page__header">
+    <span>testes</span>
+  </div>
+  <ds-card [title]="vm().titulo">
+    <app-filter-bar
+      [vm]="vm()"
+      (veiculoToggle)="usecase.toggleVeiculo($event)"
+      (dataInicioChange)="usecase.atualizarDataInicio($event)"
+      (dataFimChange)="usecase.atualizarDataFim($event)"
+      (dataCancel)="usecase.cancelarFiltroData()"
+      (dataApply)="usecase.aplicarFiltroData()"
+      (horarioInicioChange)="usecase.atualizarHorarioInicio($event)"
+      (horarioFimChange)="usecase.atualizarHorarioFim($event)"
+      (filtrar)="usecase.aplicarFiltros()"
+      (colunaToggle)="usecase.toggleColuna($event)"
+      (colunasReorder)="onReorderColunas($event)"
+      (downloadModeChange)="usecase.alterarModoDownload($event)"
+    />
+
+    <app-ui-mapa />
+
+    <app-ui-filter-table
+      [vm]="vm()"
+      [rows]="rows()"
+      [displayedColumns]="displayedColumns()"
+    />
+  </ds-card>
+</section>

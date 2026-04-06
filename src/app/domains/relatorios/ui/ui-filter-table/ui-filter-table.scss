@@ -1,0 +1,17 @@
+:host {
+  display: block;
+}
+
+ds-empty-state {
+  margin-top: var(--spacing-lg);
+}
+
+.table-wrapper {
+  margin-top: var(--spacing-lg);
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  min-width: 380px;
+}

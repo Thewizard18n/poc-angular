@@ -1,0 +1,17 @@
+<button mat-stroked-button type="button" class="filter-trigger" [matMenuTriggerFor]="veiculoMenu">
+  {{ getLabel() }}
+  <mat-icon>arrow_drop_down</mat-icon>
+</button>
+
+<mat-menu #veiculoMenu="matMenu">
+  <div class="veiculo-menu-panel" (click)="$event.stopPropagation()">
+    @for (veiculo of veiculosDisponiveis(); track veiculo) {
+      <mat-checkbox
+        [checked]="veiculosSelecionados().includes(veiculo)"
+        (click)="onToggleVeiculo($event, veiculo)"
+      >
+        {{ veiculo }}
+      </mat-checkbox>
+    }
+  </div>
+</mat-menu>

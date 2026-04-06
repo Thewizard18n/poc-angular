@@ -1,0 +1,22 @@
+<mat-card class="ds-card">
+  @if (title() || subtitle()) {
+    <mat-card-header>
+      @if (title()) {
+        <mat-card-title>{{ title() }}</mat-card-title>
+      }
+      @if (subtitle()) {
+        <mat-card-subtitle>{{ subtitle() }}</mat-card-subtitle>
+      }
+    </mat-card-header>
+  }
+
+  <ng-content select="[dsCardHeader]" />
+
+  <mat-card-content>
+    <ng-content />
+  </mat-card-content>
+
+  <mat-card-actions class="ds-card__actions" align="end">
+    <ng-content select="[dsCardActions]" />
+  </mat-card-actions>
+</mat-card>

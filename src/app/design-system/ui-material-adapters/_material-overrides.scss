@@ -1,0 +1,15 @@
+@mixin install-material-overrides() {
+  .mat-mdc-form-field {
+    --mdc-outlined-text-field-container-shape: var(--ds-radius-md);
+    --mdc-filled-text-field-container-shape: var(--ds-radius-md);
+  }
+
+  .mat-mdc-card {
+    border-radius: var(--ds-radius-lg);
+    box-shadow: var(--ds-elevation-sm);
+  }
+
+  .mat-mdc-menu-panel {
+    border-radius: var(--ds-radius-md);
+  }
+}

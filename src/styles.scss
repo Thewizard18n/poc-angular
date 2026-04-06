@@ -1,4 +1,11 @@
-@use 'app/shared/ui/tokens/tokens.scss';
+@use 'app/design-system/ui-material-adapters' as ds-material;
+
+@include ds-material.install-ui-material();
+
+html,
+body {
+  height: 100%;
+}
 
 * {
   box-sizing: border-box;
@@ -7,7 +14,9 @@
 }
 
 body {
-  font-family: var(--font-family-base);
-  background: var(--color-background);
-  color: var(--color-text-primary);
+  margin: 0;
+  font-family: var(--ds-font-family-base);
+  background: var(--ds-color-surface);
+  color: var(--ds-color-on-surface);
+  font: var(--ds-typography-body-medium);
 }

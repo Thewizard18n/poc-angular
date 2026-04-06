@@ -1,0 +1,15 @@
+<section class="ds-empty-state" aria-live="polite">
+  @if (icon()) {
+    <mat-icon>{{ icon() }}</mat-icon>
+  }
+
+  <h2>{{ title() }}</h2>
+
+  @if (description()) {
+    <p>{{ description() }}</p>
+  }
+
+  <div class="ds-empty-state__actions">
+    <ng-content select="[dsEmptyAction]" />
+  </div>
+</section>

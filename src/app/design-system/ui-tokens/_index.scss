@@ -1,0 +1,11 @@
+@use './themes' as themes;
+
+@mixin define-ui-tokens($theme-mode) {
+  @if $theme-mode == light {
+    @include themes.ds-theme-light();
+  } @else if $theme-mode == dark {
+    @include themes.ds-theme-dark();
+  } @else {
+    @error 'Unsupported theme mode. Use light or dark.';
+  }
+}

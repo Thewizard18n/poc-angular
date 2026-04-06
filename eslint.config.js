@@ -13,9 +13,6 @@ module.exports = defineConfig([
       tseslint.configs.recommended,
       angular.configs.tsRecommended,
     ],
-    plugins:{
-      '@softarc/sheriff': sheriff
-    },
     processor: angular.processInlineTemplates,
     rules: {
             // desliga regras TypeScript que não interessam agora
@@ -39,7 +36,6 @@ module.exports = defineConfig([
           style: "kebab-case",
         },
       ],
-      '@softarc/sheriff/dependency-rule': 'error',
     },
   },
   {

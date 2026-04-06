@@ -1,0 +1,21 @@
+@use '@angular/material' as mat;
+@use '../ui-tokens/theme-colors' as tokens;
+@use '../ui-tokens/themes' as themes;
+
+@mixin install-material-theme() {
+  html {
+    @include mat.theme(
+      (
+        color: (
+          primary: tokens.$primary-palette,
+          secondary: tokens.$secondary-palette,
+          tertiary: tokens.$tertiary-palette,
+        ),
+        typography: Arial,
+        density: 0,
+      )
+    );
+
+    @include themes.ds-theme-light();
+  }
+}

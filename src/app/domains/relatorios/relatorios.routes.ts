@@ -1,11 +1,7 @@
 import { Routes } from '@angular/router';
-import { UiContainer } from './ui-container/ui-container';
 
 export const relatoriosRoutes: Routes = [
-  {
-    path: '',
-    component: UiContainer,
-    children: [
+
       {
         path: '',
         loadComponent: () => import('./features/veiculos/veiculos').then((m) => m.Veiculos),
@@ -19,6 +15,4 @@ export const relatoriosRoutes: Routes = [
         path: 'teste',
         loadComponent: () => import('./features/teste/teste').then((m) => m.Teste),
       },
-    ],
-  },
 ];

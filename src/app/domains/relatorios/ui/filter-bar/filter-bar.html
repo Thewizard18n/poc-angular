@@ -1,0 +1,69 @@
+<div class="filters-row" role="group" aria-label="Barra de filtros">
+  <div class="filters-row-left">
+    <app-veiculo-filter
+      [veiculosDisponiveis]="vm().veiculosDisponiveis"
+      [veiculosSelecionados]="vm().veiculosSelecionados"
+      (veiculoToggle)="veiculoToggle.emit($event)"
+    />
+    <app-periodo-filter
+      [dataInicio]="vm().dataInicio"
+      [dataFim]="vm().dataFim"
+      (dataInicioChange)="dataInicioChange.emit($event)"
+      (dataFimChange)="dataFimChange.emit($event)"
+      (dataCancel)="dataCancel.emit()"
+      (dataApply)="dataApply.emit()"
+    />
+    <app-horario-filter
+      [horarioInicio]="vm().horarioInicio"
+      [horarioFim]="vm().horarioFim"
+      (horarioInicioChange)="horarioInicioChange.emit($event)"
+      (horarioFimChange)="horarioFimChange.emit($event)"
+    />
+    <ds-button variant="primary" size="md" (click)="filtrar.emit()">Filtrar</ds-button>
+  </div>
+
+  <div class="filters-row-right">
+    <button
+      mat-stroked-button
+      type="button"
+      [matMenuTriggerFor]="downloadMenu"
+      [disabled]="!vm().mostrarAcoesPosFiltro"
+    >
+      Download
+    </button>
+    <button mat-stroked-button type="button" class="filter-trigger" [matMenuTriggerFor]="colunasMenu">
+      Colunas
+      <mat-icon>arrow_drop_down</mat-icon>
+    </button>
+
+    <mat-slide-toggle
+      [checked]="vm().modoDownloadAtivo"
+      [disabled]="!vm().mostrarAcoesPosFiltro"
+      (change)="downloadModeChange.emit($event.checked)"
+      aria-label="Habilitar modo de download"
+    />
+  </div>
+</div>
+
+<mat-menu #colunasMenu="matMenu">
+  <div class="colunas-menu-panel columns-panel" (click)="$event.stopPropagation()">
+    <div cdkDropList (cdkDropListDropped)="onDrop($event)">
+      @for (coluna of vm().colunas; track coluna.id) {
+        <div class="column-item" cdkDrag>
+          <button mat-menu-item type="button" (click)="colunaToggle.emit(coluna.id)">
+            <mat-icon>{{ coluna.visible ? 'check_box' : 'check_box_outline_blank' }}</mat-icon>
+            <span>{{ coluna.label }}</span>
+          </button>
+          <button mat-icon-button type="button" cdkDragHandle aria-label="Reordenar coluna">
+            <mat-icon>drag_indicator</mat-icon>
+          </button>
+        </div>
+      }
+    </div>
+  </div>
+</mat-menu>
+
+<mat-menu #downloadMenu="matMenu">
+  <button mat-menu-item type="button">Download CSV</button>
+  <button mat-menu-item type="button">Download XLSX</button>
+</mat-menu>

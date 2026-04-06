@@ -1,0 +1,9 @@
+<ds-date-range-menu-field
+  [startDate]="dataInicio()"
+  [endDate]="dataFim()"
+  fallbackLabel="Periodo"
+  (startDateChange)="dataInicioChange.emit($event)"
+  (endDateChange)="dataFimChange.emit($event)"
+  (cancel)="dataCancel.emit()"
+  (apply)="dataApply.emit()"
+/>

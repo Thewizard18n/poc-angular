@@ -1,0 +1,21 @@
+@mixin dimension-tokens() {
+  --ds-spacing-2xs: 2px;
+  --ds-spacing-xs: 4px;
+  --ds-spacing-sm: 8px;
+  --ds-spacing-md: 16px;
+  --ds-spacing-lg: 24px;
+  --ds-spacing-xl: 32px;
+  --ds-spacing-2xl: 40px;
+
+  --ds-radius-sm: 8px;
+  --ds-radius-md: 12px;
+  --ds-radius-lg: 16px;
+  --ds-radius-pill: 9999px;
+
+  --ds-elevation-sm: 0 1px 2px rgb(0 0 0 / 8%);
+  --ds-elevation-md: 0 4px 12px rgb(0 0 0 / 10%);
+  --ds-elevation-lg: 0 8px 24px rgb(0 0 0 / 14%);
+
+  --ds-transition-fast: 140ms cubic-bezier(0.2, 0, 0, 1);
+  --ds-transition-base: 220ms cubic-bezier(0.2, 0, 0, 1);
+}

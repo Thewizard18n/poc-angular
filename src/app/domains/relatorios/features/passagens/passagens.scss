@@ -1,0 +1,19 @@
+:host {
+  display: block;
+  padding: var(--spacing-md);
+}
+
+.passagens-page {
+  padding: var(--spacing-lg);
+  min-height: calc(100vh - 140px);
+}
+
+.passagens-page ds-card {
+  display: block;
+}
+
+@media (max-width: 960px) {
+  .passagens-page {
+    padding: var(--spacing-md);
+  }
+}

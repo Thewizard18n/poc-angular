@@ -1,0 +1,53 @@
+@if (variant() === 'primary') {
+  <button
+    mat-flat-button
+    [type]="type()"
+    [disabled]="isDisabled()"
+    [attr.aria-label]="ariaLabel()"
+    [ngClass]="['ds-button', 'ds-button--primary', 'ds-button--' + size(), fullWidth() ? 'ds-button--full' : '']"
+  >
+    @if (loading()) {
+      <mat-progress-spinner class="ds-button__spinner" diameter="16" mode="indeterminate" />
+    }
+    <span class="ds-button__label"><ng-content></ng-content></span>
+  </button>
+} @else if (variant() === 'secondary') {
+  <button
+    mat-stroked-button
+    [type]="type()"
+    [disabled]="isDisabled()"
+    [attr.aria-label]="ariaLabel()"
+    [ngClass]="['ds-button', 'ds-button--secondary', 'ds-button--' + size(), fullWidth() ? 'ds-button--full' : '']"
+  >
+    @if (loading()) {
+      <mat-progress-spinner class="ds-button__spinner" diameter="16" mode="indeterminate" />
+    }
+    <span class="ds-button__label"><ng-content /></span>
+  </button>
+} @else if (variant() === 'tonal') {
+  <button
+    mat-flat-button
+    [type]="type()"
+    [disabled]="isDisabled()"
+    [attr.aria-label]="ariaLabel()"
+    [ngClass]="['ds-button', 'ds-button--tonal', 'ds-button--' + size(), fullWidth() ? 'ds-button--full' : '']"
+  >
+    @if (loading()) {
+      <mat-progress-spinner class="ds-button__spinner" diameter="16" mode="indeterminate" />
+    }
+    <span class="ds-button__label"><ng-content /></span>
+  </button>
+} @else {
+  <button
+    mat-button
+    [type]="type()"
+    [disabled]="isDisabled()"
+    [attr.aria-label]="ariaLabel()"
+    [ngClass]="['ds-button', 'ds-button--text', 'ds-button--' + size(), fullWidth() ? 'ds-button--full' : '']"
+  >
+    @if (loading()) {
+      <mat-progress-spinner class="ds-button__spinner" diameter="16" mode="indeterminate" />
+    }
+    <span class="ds-button__label"><ng-content /></span>
+  </button>
+}

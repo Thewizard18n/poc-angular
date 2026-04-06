@@ -1,0 +1,40 @@
+:host {
+  display: block;
+}
+
+.ds-empty-state {
+  border: 1px dashed var(--ds-color-outline);
+  border-radius: var(--ds-radius-lg);
+  background: var(--ds-color-surface-container);
+  min-height: 220px;
+  padding: var(--ds-spacing-xl);
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: var(--ds-spacing-sm);
+  text-align: center;
+}
+
+.ds-empty-state mat-icon {
+  width: 40px;
+  height: 40px;
+  font-size: 40px;
+  color: var(--ds-color-on-surface-variant);
+}
+
+.ds-empty-state h2 {
+  font: var(--ds-typography-title-medium);
+}
+
+.ds-empty-state p {
+  font: var(--ds-typography-body-medium);
+  color: var(--ds-color-on-surface-variant);
+}
+
+.ds-empty-state__actions {
+  margin-top: var(--ds-spacing-sm);
+}
+
+.ds-empty-state__actions:empty {
+  display: none;
+}

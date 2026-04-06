@@ -1,0 +1,37 @@
+<div class="ds-date-range-menu-field">
+  <button mat-stroked-button type="button" class="ds-date-range-menu-field__trigger" (click)="openPicker($event)">
+    {{ getLabel() }}
+    <mat-icon>arrow_drop_down</mat-icon>
+  </button>
+
+  <div class="ds-date-range-menu-field__picker-host" aria-hidden="true">
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-date-range-input [rangePicker]="rangePicker">
+        <input
+          matStartDate
+          tabindex="-1"
+          [ngModel]="startDate()"
+          (ngModelChange)="startDateChange.emit($event)"
+        />
+        <input
+          matEndDate
+          tabindex="-1"
+          [ngModel]="endDate()"
+          (ngModelChange)="endDateChange.emit($event)"
+        />
+      </mat-date-range-input>
+
+      <mat-date-range-picker #rangePicker>
+        <mat-date-range-picker-actions>
+          <button mat-button type="button" matDateRangePickerCancel (click)="cancel.emit()">
+            Cancelar
+          </button>
+          <button mat-button type="button" (click)="closePicker()">Fechar</button>
+          <button mat-stroked-button type="button" matDateRangePickerApply (click)="apply.emit()">
+            Aplicar
+          </button>
+        </mat-date-range-picker-actions>
+      </mat-date-range-picker>
+    </mat-form-field>
+  </div>
+</div>

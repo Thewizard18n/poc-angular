@@ -1,0 +1,13 @@
+@mixin typography-tokens() {
+  --ds-font-family-base: Roboto, 'Helvetica Neue', sans-serif;
+
+  --ds-typography-display-small: var(--mat-sys-display-small);
+  --ds-typography-headline-medium: var(--mat-sys-headline-medium);
+  --ds-typography-title-large: var(--mat-sys-title-large);
+  --ds-typography-title-medium: var(--mat-sys-title-medium);
+  --ds-typography-body-large: var(--mat-sys-body-large);
+  --ds-typography-body-medium: var(--mat-sys-body-medium);
+  --ds-typography-body-small: var(--mat-sys-body-small);
+  --ds-typography-label-large: var(--mat-sys-label-large);
+  --ds-typography-label-medium: var(--mat-sys-label-medium);
+}

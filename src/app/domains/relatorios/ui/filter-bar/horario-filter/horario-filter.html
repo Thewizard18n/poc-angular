@@ -1,0 +1,27 @@
+<button mat-stroked-button type="button" class="filter-trigger" [matMenuTriggerFor]="horarioMenu">
+  {{ getLabel() }}
+  <mat-icon>arrow_drop_down</mat-icon>
+</button>
+
+<mat-menu #horarioMenu="matMenu">
+  <div class="horario-menu-panel" (click)="$event.stopPropagation()">
+    <!-- <ds-text-field
+      label="Horario inicio"
+      type="time"
+      [ngModel]="horarioInicio()"
+      (ngModelChange)="horarioInicioChange.emit($event)"
+    />
+
+    <ds-text-field
+      label="Horario fim"
+      type="time"
+      [ngModel]="horarioFim()"
+      (ngModelChange)="horarioFimChange.emit($event)"
+    /> -->
+
+    <div class="horario-menu-actions">
+      <button mat-button matMenuClose type="button">Fechar</button>
+      <button mat-stroked-button matMenuClose type="button">Aplicar</button>
+    </div>
+  </div>
+</mat-menu>

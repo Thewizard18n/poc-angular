@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { UiContainer } from '../../ui-container/ui-container';
 
 @Component({
   selector: 'app-veiculos',

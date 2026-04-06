@@ -1,0 +1,51 @@
+:host {
+  display: inline-block;
+}
+
+.ds-date-range-menu-field {
+  position: relative;
+  display: inline-block;
+}
+
+.ds-date-range-menu-field__trigger {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  border-radius: var(--ds-radius-pill);
+  min-height: 40px;
+  max-width: 260px;
+}
+
+.ds-date-range-menu-field__trigger .mdc-button__label {
+  display: inline-flex;
+  align-items: center;
+}
+
+.ds-date-range-menu-field__trigger mat-icon {
+  margin-right: -6px;
+}
+
+.ds-date-range-menu-field__picker-host {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+  pointer-events: none;
+}
+
+.ds-date-range-menu-field__picker-host mat-form-field {
+  width: 1px;
+}
+
+@media (max-width: 960px) {
+  .ds-date-range-menu-field__trigger {
+    width: 100%;
+    max-width: unset;
+    justify-content: space-between;
+  }
+}

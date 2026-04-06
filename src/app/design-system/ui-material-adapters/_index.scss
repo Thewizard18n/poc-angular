@@ -1,0 +1,7 @@
+@use './material-overrides' as overrides;
+@use './material-theme' as theme;
+
+@mixin install-ui-material() {
+  @include theme.install-material-theme();
+  @include overrides.install-material-overrides();
+}
