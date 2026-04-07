@@ -17,6 +17,8 @@ export class HorarioFilter {
 
   readonly horarioInicioChange = output<string>();
   readonly horarioFimChange = output<string>();
+  protected draftHorarioInicio = '';
+  protected draftHorarioFim = '';
 
   getLabel(): string {
     const inicio = this.horarioInicio();
@@ -26,5 +28,20 @@ export class HorarioFilter {
     }
 
     return `${inicio} - ${fim}`;
+  }
+
+  onMenuOpened(): void {
+    this.draftHorarioInicio = this.horarioInicio();
+    this.draftHorarioFim = this.horarioFim();
+  }
+
+  onCancel(): void {
+    this.draftHorarioInicio = this.horarioInicio();
+    this.draftHorarioFim = this.horarioFim();
+  }
+
+  onApply(): void {
+    this.horarioInicioChange.emit(this.draftHorarioInicio);
+    this.horarioFimChange.emit(this.draftHorarioFim);
   }
 }

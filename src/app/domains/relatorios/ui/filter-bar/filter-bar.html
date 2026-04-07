@@ -45,8 +45,8 @@
   </div>
 </div>
 
-<mat-menu #colunasMenu="matMenu">
-  <div class="colunas-menu-panel columns-panel" (click)="$event.stopPropagation()">
+<mat-menu #colunasMenu="matMenu" panelClass="filter-menu-no-scroll">
+  <div class="colunas-menu-panel" (click)="$event.stopPropagation()">
     <div cdkDropList (cdkDropListDropped)="onDrop($event)">
       @for (coluna of vm().colunas; track coluna.id) {
         <div class="column-item" cdkDrag>

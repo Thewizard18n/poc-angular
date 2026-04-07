@@ -12,4 +12,13 @@
   .mat-mdc-menu-panel {
     border-radius: var(--ds-radius-md);
   }
+
+  .mat-mdc-menu-panel.filter-menu-no-scroll {
+    max-height: none;
+
+    .mat-mdc-menu-content {
+      overflow: visible;
+      padding: 0;
+    }
+  }
 }

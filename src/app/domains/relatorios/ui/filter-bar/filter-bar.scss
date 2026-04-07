@@ -44,15 +44,12 @@
 }
 
 .colunas-menu-panel {
-  width: 340px;
+  width: 420px;
   padding: var(--spacing-sm) var(--spacing-md);
   display: grid;
   gap: var(--spacing-sm);
-}
-
-.columns-panel {
-  max-height: 260px;
-  overflow: auto;
+  max-height: none;
+  overflow: visible;
 }
 
 .column-item {

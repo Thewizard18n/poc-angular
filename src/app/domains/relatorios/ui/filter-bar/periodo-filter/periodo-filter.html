@@ -1,9 +1,25 @@
-<ds-date-range-menu-field
-  [startDate]="dataInicio()"
-  [endDate]="dataFim()"
-  fallbackLabel="Periodo"
-  (startDateChange)="dataInicioChange.emit($event)"
-  (endDateChange)="dataFimChange.emit($event)"
-  (cancel)="dataCancel.emit()"
-  (apply)="dataApply.emit()"
-/>
+<button mat-stroked-button type="button" class="filter-trigger" (click)="openPicker($event)">
+  <span class="filter-trigger__label">
+    @if (hasRange()) {
+      <mat-icon class="filter-trigger__calendar-icon">calendar_today</mat-icon>
+    }
+    <span>{{ getLabel() }}</span>
+  </span>
+  <mat-icon>arrow_drop_down</mat-icon>
+</button>
+
+<div class="periodo-picker-host" aria-hidden="true">
+  <mat-form-field appearance="outline" subscriptSizing="dynamic">
+    <mat-date-range-input [rangePicker]="rangePicker">
+      <input matStartDate tabindex="-1" [(ngModel)]="draftDataInicio" />
+      <input matEndDate tabindex="-1" [(ngModel)]="draftDataFim" />
+    </mat-date-range-input>
+
+    <mat-date-range-picker #rangePicker panelClass="periodo-range-panel">
+      <mat-date-range-picker-actions>
+        <button mat-button type="button" matDateRangePickerCancel (click)="onCancel()">Cancelar</button>
+        <button mat-stroked-button type="button" matDateRangePickerApply (click)="onApply()">Aplicar</button>
+      </mat-date-range-picker-actions>
+    </mat-date-range-picker>
+  </mat-form-field>
+</div>
