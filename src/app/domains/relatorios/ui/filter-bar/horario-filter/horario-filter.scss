@@ -16,6 +16,18 @@
   align-items: center;
 }
 
+.filter-trigger__label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.filter-trigger__clock-icon {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+}
+
 .filter-trigger mat-icon {
   margin-right: -6px;
 }
@@ -35,23 +47,7 @@
 }
 
 .horario-field {
-  display: grid;
-  gap: 6px;
-}
-
-.horario-field-label {
-  font-size: 12px;
-  color: var(--fg-muted);
-}
-
-.horario-field input {
   width: 100%;
-  min-height: 40px;
-  border: 1px solid var(--border-subtle);
-  border-radius: 8px;
-  background-color: var(--bg-surface);
-  color: var(--fg-default);
-  padding: 0 10px;
 }
 
 .horario-menu-actions {

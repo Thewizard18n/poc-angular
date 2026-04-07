@@ -1,13 +1,15 @@
 import { Component, input, output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
 
 
 @Component({
   selector: 'app-horario-filter',
-  imports: [ FormsModule, MatButtonModule, MatIconModule, MatMenuModule],
+  imports: [FormsModule, MatButtonModule, MatFormFieldModule, MatIconModule, MatInputModule, MatMenuModule],
   templateUrl: './horario-filter.html',
   styleUrl: './horario-filter.scss',
 })
@@ -28,6 +30,10 @@ export class HorarioFilter {
     }
 
     return `${inicio} - ${fim}`;
+  }
+
+  hasAppliedRange(): boolean {
+    return !!this.horarioInicio() && !!this.horarioFim();
   }
 
   onMenuOpened(): void {

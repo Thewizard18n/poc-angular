@@ -5,22 +5,27 @@
   [matMenuTriggerFor]="horarioMenu"
   (menuOpened)="onMenuOpened()"
 >
-  {{ getLabel() }}
+  <span class="filter-trigger__label">
+    @if (hasAppliedRange()) {
+      <mat-icon class="filter-trigger__clock-icon">schedule</mat-icon>
+    }
+    <span>{{ getLabel() }}</span>
+  </span>
   <mat-icon>arrow_drop_down</mat-icon>
 </button>
 
 <mat-menu #horarioMenu="matMenu" panelClass="filter-menu-no-scroll">
   <div class="horario-menu-panel" (click)="$event.stopPropagation()">
     <div class="horario-menu-inputs">
-      <label class="horario-field">
-        <span class="horario-field-label">Initial hour</span>
-        <input type="time" [(ngModel)]="draftHorarioInicio" />
-      </label>
+      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="horario-field">
+        <mat-label>Initial hour</mat-label>
+        <input matInput type="time" [(ngModel)]="draftHorarioInicio" />
+      </mat-form-field>
 
-      <label class="horario-field">
-        <span class="horario-field-label">Final hour</span>
-        <input type="time" [(ngModel)]="draftHorarioFim" />
-      </label>
+      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="horario-field">
+        <mat-label>Final hour</mat-label>
+        <input matInput type="time" [(ngModel)]="draftHorarioFim" />
+      </mat-form-field>
     </div>
 
     <div class="horario-menu-actions">
