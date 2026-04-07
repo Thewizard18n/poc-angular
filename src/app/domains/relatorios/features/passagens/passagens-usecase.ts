@@ -1,6 +1,4 @@
-import { inject, Injectable } from '@angular/core';
-import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { computed, inject, Injectable, signal } from '@angular/core';
 
 import { PassagensDataAccess } from '../../data-access';
 import {
@@ -20,91 +18,69 @@ export class PassagensUsecase {
     { id: 'teste1', label: 'Teste 1', visible: true },
     { id: 'teste2', label: 'Teste 2', visible: true },
   ];
-
-  private readonly filtroSubject = new BehaviorSubject<PassagensFilterPayload>({
-    veiculos: [],
+  private readonly vmState = signal<PassagensViewModel>({
+    titulo: 'Titulo',
+    veiculosDisponiveis: this.veiculosDisponiveis,
+    veiculosSelecionados: [],
     dataInicio: null,
     dataFim: null,
     horarioInicio: '',
     horarioFim: '',
+    colunas: this.colunasIniciais,
+    mostrarAcoesPosFiltro: false,
+    modoDownloadAtivo: false,
+    exibirImagemInicial: true,
   });
-  private readonly colunasSubject = new BehaviorSubject<PassagensColumnConfig[]>(this.colunasIniciais);
-  private readonly acoesHabilitadasSubject = new BehaviorSubject<boolean>(false);
-  private readonly modoDownloadSubject = new BehaviorSubject<boolean>(false);
-  private readonly tabelaRowsSubject = new BehaviorSubject<PassagemTableRow[]>([]);
+  private readonly rowsState = signal<PassagemTableRow[]>([]);
 
-  readonly viewModel$: Observable<PassagensViewModel> = combineLatest([
-    this.filtroSubject,
-    this.colunasSubject,
-    this.acoesHabilitadasSubject,
-    this.modoDownloadSubject,
-  ]).pipe(
-    map(([filtro, colunas, mostrarAcoesPosFiltro, modoDownloadAtivo]) => ({
-      titulo: 'Titulo',
-      veiculosDisponiveis: this.veiculosDisponiveis,
-      veiculosSelecionados: filtro.veiculos,
-      dataInicio: filtro.dataInicio,
-      dataFim: filtro.dataFim,
-      horarioInicio: filtro.horarioInicio,
-      horarioFim: filtro.horarioFim,
-      colunas,
-      mostrarAcoesPosFiltro,
-      modoDownloadAtivo,
-      exibirImagemInicial: !mostrarAcoesPosFiltro,
-    })),
-  );
-
-  readonly tabelaRows$ = this.tabelaRowsSubject.asObservable();
+  readonly vm = this.vmState.asReadonly();
+  readonly rows = this.rowsState.asReadonly();
+  readonly displayedColumns = computed(() => this.vm().colunas.filter((coluna) => coluna.visible).map((coluna) => coluna.id));
 
   toggleVeiculo(veiculo: string): void {
-    const filtro = this.filtroSubject.value;
-    const jaSelecionado = filtro.veiculos.includes(veiculo);
+    const vm = this.vm();
+    const jaSelecionado = vm.veiculosSelecionados.includes(veiculo);
     const proximoVeiculos = jaSelecionado
-      ? filtro.veiculos.filter((item) => item !== veiculo)
-      : [...filtro.veiculos, veiculo];
+      ? vm.veiculosSelecionados.filter((item) => item !== veiculo)
+      : [...vm.veiculosSelecionados, veiculo];
 
-    this.filtroSubject.next({ ...filtro, veiculos: proximoVeiculos });
+    this.atualizarVm({ veiculosSelecionados: proximoVeiculos });
   }
 
   atualizarDataInicio(dataInicio: Date | null): void {
-    this.filtroSubject.next({ ...this.filtroSubject.value, dataInicio });
+    this.atualizarVm({ dataInicio });
   }
 
   atualizarDataFim(dataFim: Date | null): void {
-    this.filtroSubject.next({ ...this.filtroSubject.value, dataFim });
+    this.atualizarVm({ dataFim });
   }
 
   cancelarFiltroData(): void {
-    this.filtroSubject.next({
-      ...this.filtroSubject.value,
-      dataInicio: null,
-      dataFim: null,
-    });
+    this.atualizarVm({ dataInicio: null, dataFim: null });
   }
 
   aplicarFiltroData(): void {
-    this.repository.salvarFiltroData(this.filtroSubject.value).subscribe();
+    this.repository.salvarFiltroData(this.getFiltroPayload()).subscribe();
   }
 
   atualizarHorarioInicio(horarioInicio: string): void {
-    this.filtroSubject.next({ ...this.filtroSubject.value, horarioInicio });
+    this.atualizarVm({ horarioInicio });
   }
 
   atualizarHorarioFim(horarioFim: string): void {
-    this.filtroSubject.next({ ...this.filtroSubject.value, horarioFim });
+    this.atualizarVm({ horarioFim });
   }
 
   aplicarFiltros(): void {
-    const filtroAtual = this.filtroSubject.value;
-    this.acoesHabilitadasSubject.next(true);
-    this.repository.getPassagens(filtroAtual).subscribe((rows) => this.tabelaRowsSubject.next(rows));
+    this.atualizarVm({ mostrarAcoesPosFiltro: true });
+    this.repository.getPassagens(this.getFiltroPayload()).subscribe((rows) => this.rowsState.set(rows));
   }
 
   toggleColuna(colunaId: PassagensDataColumnId): void {
-    const proximaLista = this.colunasSubject.value.map((coluna) =>
+    const proximaLista = this.vm().colunas.map((coluna) =>
       coluna.id === colunaId ? { ...coluna, visible: !coluna.visible } : coluna,
     );
-    this.colunasSubject.next(proximaLista);
+    this.atualizarVm({ colunas: proximaLista });
   }
 
   reordenarColunas(previousIndex: number, currentIndex: number): void {
@@ -112,17 +88,36 @@ export class PassagensUsecase {
       return;
     }
 
-    const colunas = [...this.colunasSubject.value];
+    const colunas = [...this.vm().colunas];
     const [movida] = colunas.splice(previousIndex, 1);
     colunas.splice(currentIndex, 0, movida);
-    this.colunasSubject.next(colunas);
+    this.atualizarVm({ colunas });
   }
 
   alterarModoDownload(ativo: boolean): void {
-    this.modoDownloadSubject.next(ativo);
+    this.atualizarVm({ modoDownloadAtivo: ativo });
   }
 
-  getDisplayedColumns(colunas: PassagensColumnConfig[]): PassagensDataColumnId[] {
-    return colunas.filter((coluna) => coluna.visible).map((coluna) => coluna.id);
+  private atualizarVm(parcial: Partial<PassagensViewModel>): void {
+    this.vmState.update((atual) => {
+      const mostrarAcoesPosFiltro = parcial.mostrarAcoesPosFiltro ?? atual.mostrarAcoesPosFiltro;
+
+      return {
+        ...atual,
+        ...parcial,
+        exibirImagemInicial: !mostrarAcoesPosFiltro,
+      };
+    });
+  }
+
+  private getFiltroPayload(): PassagensFilterPayload {
+    const vm = this.vm();
+    return {
+      veiculos: vm.veiculosSelecionados,
+      dataInicio: vm.dataInicio,
+      dataFim: vm.dataFim,
+      horarioInicio: vm.horarioInicio,
+      horarioFim: vm.horarioFim,
+    };
   }
 }
