@@ -50,10 +50,15 @@
     <div cdkDropList (cdkDropListDropped)="onDrop($event)">
       @for (coluna of vm().colunas; track coluna.id) {
         <div class="column-item" cdkDrag>
-          <button mat-menu-item type="button" (click)="colunaToggle.emit(coluna.id)">
-            <mat-icon>{{ coluna.visible ? 'check_box' : 'check_box_outline_blank' }}</mat-icon>
-            <span>{{ coluna.label }}</span>
-          </button>
+          <mat-checkbox
+            class="column-checkbox"
+            color="primary"
+            [checked]="coluna.visible"
+            (click)="$event.stopPropagation()"
+            (change)="colunaToggle.emit(coluna.id)"
+          >
+            {{ coluna.label }}
+          </mat-checkbox>
           <button mat-icon-button type="button" cdkDragHandle aria-label="Reordenar coluna">
             <mat-icon>drag_indicator</mat-icon>
           </button>
