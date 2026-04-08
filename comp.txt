@@ -1,30 +1,114 @@
 1. M1 – Visão e critérios do Shell definidos
     1. Arquitetura-alvo do Shell, formas de convivência (iframe + nativo), estratégia de modularização vertical e papel do design system formalmente aprovados , 
     2. Matriz de métricas e critérios de sucesso do Shell (UX, performance, redução de legado, adoção) definidas
+    3. Estratégia de rollout , rollback e uso de feature flags aprovada como parte da arquitetura operacional do Shell
+    4. Tecnologia que serao usadas homologadas (versao angular x , lib y)
 2. M2 – Fundação técnica do Shell pronta
-    1. Repositório do novo Shell criado e comvencoes publicadas no confluente,
-    2.  Pipeline e quality gate ativos (lint , build)
+    1. Repositório do novo Shell criado e comvencoes publicadas no confluente , criamos ambientes,
+    2. Configuramos Pipeline e quality gate ativos (lint , build)
     3. Autenticação integrada ao Shell e permissionamento
     4. Layout, roteamento e tratamento de erros definidos alem de ferramentas de scaffolding
-    5. Showcase tecnico do projeto
-    6. Tecnologias homologadas e plano de rollout aprovado (angular versão x , lib y e como lançaremos em prd)
+    5. Showcase tecnico do projeto com compodoc
+    6. Infraestrutura base de feature toggle disponível no Shell, com convenções de naming, ownership , regras explicitas
+    7. Padrão de fallback operacional documentado falha de iframe e erro de carregamento de módulo.
+    8. Estratégia mínima de testes automatizados para Shell, autenticação, fallback e fluxos críticos definida
 3. M3 – Design system inicial disponível
     1. Token definidos (cores , ícones , tipografia , grid)
     2. Componentes bases disponíveis para reutilização
     3. Adaptacao para look & feel
-    4. Showcase com storybook para visualização dos componentes
+    4. Showcase com storybook para visualização dos componentes em url interna
 4. M4 – Shell em produção convivendo com legado
     1. Primeira tela legada renderizada dentro do Shell com autenticação via iframe
     2. Estrutura de integração via iframe definida
     3. Rollout de Shell com legado em produção
     4. Shell sendo monitorado
+    5. Rollback operacional testado
 5. M5 – Primeiras telas nativas entregues no Shell
-    1. Estratégia de migração por tela/jornada definida
+    1. Estratégia de migração por tela/jornada definida com Critério de descontinuação de telas legadas
     2. Primeira tela nativa no Shell entregue usando arquitetura vertical + DS,
     3. AngularJS em redução controlada
     4. Esteira de novas telas estabilizada
+    5. Métricas de produtividade e estabilidade comparadas
 6. M6 – Estratégia de migração e microfronts formalizada
-    1. Critérios para microfrontends definidos
-    2. Plano de redução de legado revisado e atualizado
+    1. Critérios e gatilhos para adoção futura de Nx e/ou estratégias de microfrontend avaliados e formalizados.
+    2. Evidências coletadas para decidir se a complexidade adicional se justifica.
+    2. Introducao de novas tecnologias (NX , native federation)
+    3. Plano de redução de legado revisado e atualizado
 
 
+adicione slides iniciais mostrando o end state de sucesso da nossa arquitetura.
+
+1) O end state de sucesso principal e:
+
+Shell funcional e operando como nova camada de experiência e governança.
+Legado renderizado com segurança e convivendo de forma controlada com o novo.
+Novas features entregues em Angular moderno, com arquitetura modular vertical.
+Base inicial de design system disponível e adotada nas novas entregas.
+Padrão de código, convenções e quality gates estabelecidos.
+Rollout, rollback e feature flags permitindo entregas incrementais com menor risco.
+Observabilidade e métricas de saúde ativas em produção.
+Redução pragmática e contínua da dependência do AngularJS.
+
+2) mostrando como sera o shell e adequacao de telas
+
+revise e adeque os milestone de forma correta
+
+1. M1 – Visão e critérios do Shell definidos
+    1. Arquitetura-alvo do Shell, formas de convivência (iframe + nativo), estratégia de modularização vertical e papel do design system formalmente aprovados , 
+    2. Matriz de métricas e critérios de sucesso do Shell (UX, performance, redução de legado, adoção) definidas
+    3. Estratégia de rollout , rollback e uso de feature flags aprovada como parte da arquitetura operacional do Shell
+    4. Tecnologia que serao usadas homologadas (versao angular x , lib y)
+
+    Resultado: direção única para a migração, com arquitetura, tecnologia, métricas e estratégia de rollout/rollback aprovadas.
+    O que alcançamos: alinhamento entre times e clareza de como vamos seguir.
+
+2. M2 – Fundação técnica do Shell pronta
+    1. Repositório do novo Shell criado e comvencoes publicadas no confluente , criamos ambientes,
+    2. Configuramos Pipeline e quality gate ativos (lint , build)
+    3. Autenticação integrada ao Shell e permissionamento
+    4. Layout, roteamento e tratamento de erros definidos alem de ferramentas de scaffolding
+    5. Showcase tecnico do projeto com compodoc
+    6. Infraestrutura base de feature toggle disponível no Shell, com convenções de naming, ownership , regras explicitas
+    7. Padrão de fallback operacional documentado falha de iframe e erro de carregamento de módulo.
+    8. Estratégia mínima de testes automatizados para Shell, autenticação, fallback e fluxos críticos definida
+
+    Resultado: Shell preparado para desenvolvimento real, com repo, ambientes, pipeline, auth, convenções, scaffolding e feature toggle base
+    O que alcançamos: capacidade técnica para construir com padrão e menor risco.
+
+3. M3 – Design system inicial disponível
+    1. Token definidos (cores , ícones , tipografia , grid)
+    2. Componentes bases disponíveis para reutilização
+    3. Adaptacao para look & feel
+    4. Showcase com storybook para visualização dos componentes em url interna
+
+    Resultado: base visual e técnica comum criada, com tokens, componentes reutilizáveis e showcase interno.
+    O que alcançamos: mais consistência na experiência e mais velocidade para novas entregas.
+
+4. M4 – Shell em produção convivendo com legado
+    1. Primeira tela legada renderizada dentro do Shell com autenticação via iframe
+    2. Estrutura de integração via iframe definida
+    3. Rollout de Shell com legado em produção
+    4. Shell sendo monitorado
+    5. Rollback operacional testado
+
+    Resultado: Shell publicado em produção com legado integrado via iframe, rollout controlado e monitoramento ativo.
+    O que alcançamos: entrada segura do novo Shell e plano de rollback claro.
+
+5. M5 – Primeiras telas nativas entregues no Shell
+    1. Estratégia de migração por tela/jornada definida com Critério de descontinuação de telas legadas
+    2. Primeira tela nativa no Shell entregue usando arquitetura vertical + DS,
+    3. AngularJS em redução controlada
+    4. Esteira de novas telas estabilizada
+    5. Métricas de produtividade e estabilidade comparadas
+
+    Resultado: primeiras jornadas nativas em Angular moderno entregues dentro do Shell com arquitetura vertical e DS.
+    O que alcançamos: começo real da redução do AngularJS e validação do novo modelo de entrega.
+
+6. M6 – Estratégia de migração e microfronts formalizada
+    1. Critérios e gatilhos para adoção futura de Nx e/ou estratégias de microfrontend avaliados e formalizados.
+    2. Evidências coletadas para decidir se a complexidade adicional se justifica.
+    2. Introducao de novas tecnologias (NX , native federation)
+    3. Plano de redução de legado revisado e atualizado
+
+    Resultado: plano de evolução revisado com critérios claros para próximos passos e eventual adoção de microfrontends.
+    O que alcançamos: maturidade para evoluir sem overengineering e com decisão baseada em evidência.
