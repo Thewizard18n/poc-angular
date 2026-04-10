@@ -1,10 +1,10 @@
-import { Component, input, output } from '@angular/core';
+import { Component, input, output, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { MatMenuModule } from '@angular/material/menu';
+import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
 
 
 @Component({
@@ -14,6 +14,8 @@ import { MatMenuModule } from '@angular/material/menu';
   styleUrl: './horario-filter.scss',
 })
 export class HorarioFilter {
+  private readonly horarioMenuTrigger = viewChild<MatMenuTrigger>('horarioMenuTrigger');
+
   readonly horarioInicio = input.required<string>();
   readonly horarioFim = input.required<string>();
 
@@ -49,5 +51,6 @@ export class HorarioFilter {
   onApply(): void {
     this.horarioInicioChange.emit(this.draftHorarioInicio);
     this.horarioFimChange.emit(this.draftHorarioFim);
+    this.horarioMenuTrigger()?.closeMenu();
   }
 }

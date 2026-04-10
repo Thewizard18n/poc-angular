@@ -5,6 +5,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule, MatDateRangePicker } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
 
 @Component({
   selector: 'app-periodo-filter',
@@ -15,6 +16,7 @@ import { MatIconModule } from '@angular/material/icon';
     MatFormFieldModule,
     MatIconModule,
     MatNativeDateModule,
+    MatMenuModule,
   ],
   templateUrl: './periodo-filter.html',
   styleUrl: './periodo-filter.scss',

@@ -34,24 +34,25 @@
 
 .periodo-picker-host {
   position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
+  width: 0;
+  height: 0;
   overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
+  opacity: 0;
   pointer-events: none;
 }
 
-.periodo-picker-host mat-form-field {
-  width: 1px;
+.periodo-picker-host mat-date-range-input,
+.periodo-picker-host input[matStartDate],
+.periodo-picker-host input[matEndDate] {
+  width: 0;
+  min-width: 0;
+  height: 0;
+  min-height: 0;
+  padding: 0;
+  border: 0;
 }
 
-:host ::ng-deep .periodo-range-panel {
-  margin-top: -8px;
-}
+
 
 @media (max-width: 960px) {
   .filter-trigger {
