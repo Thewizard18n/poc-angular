@@ -18,15 +18,23 @@
 <mat-menu #horarioMenu="matMenu" panelClass="filter-menu-no-scroll">
   <div class="horario-menu-panel" (click)="$event.stopPropagation()">
     <div class="horario-menu-inputs">
-      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="horario-field">
-        <mat-label>Initial hour</mat-label>
-        <input matInput type="time" [(ngModel)]="draftHorarioInicio" />
-      </mat-form-field>
+      <div class="horario-field">
+        <label class="horario-field__label">Initial hour</label>
+        <div class="horario-field__control">
+          <input class="horario-field__input" [matTimepicker]="pickerInicio" [(ngModel)]="draftHorarioInicio" />
+          <mat-timepicker-toggle class="horario-field__toggle" [for]="pickerInicio" />
+          <mat-timepicker #pickerInicio />
+        </div>
+      </div>
 
-      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="horario-field">
-        <mat-label>Final hour</mat-label>
-        <input matInput type="time" [(ngModel)]="draftHorarioFim" />
-      </mat-form-field>
+      <div class="horario-field">
+        <label class="horario-field__label">Final hour</label>
+        <div class="horario-field__control">
+          <input class="horario-field__input" [matTimepicker]="pickerFim" [(ngModel)]="draftHorarioFim" />
+          <mat-timepicker-toggle class="horario-field__toggle" [for]="pickerFim" />
+          <mat-timepicker #pickerFim />
+        </div>
+      </div>
     </div>
 
     <div class="horario-menu-actions">

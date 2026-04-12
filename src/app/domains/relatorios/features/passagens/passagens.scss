@@ -12,8 +12,35 @@
   display: block;
 }
 
+.filters-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.filters-row-left {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.filters-row-right {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.filters-row-right mat-slide-toggle {
+  margin-left: auto;
+}
+
 @media (max-width: 960px) {
   .passagens-page {
     padding: var(--spacing-md);
+  }
+
+  .filters-row {
+    width: 100%;
   }
 }

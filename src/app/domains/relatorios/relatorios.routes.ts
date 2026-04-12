@@ -2,10 +2,7 @@ import { Routes } from '@angular/router';
 
 export const relatoriosRoutes: Routes = [
 
-      {
-        path: '',
-        loadComponent: () => import('./features/veiculos/veiculos').then((m) => m.Veiculos),
-      },
+
       {
         path: 'passagens',
         loadChildren: () =>

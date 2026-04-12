@@ -1,17 +1,17 @@
+@import 'ag-grid-community/styles/ag-grid.css';
+@import 'ag-grid-community/styles/ag-theme-quartz.css';
+
 :host {
   display: block;
 }
 
-ds-empty-state {
-  margin-top: var(--spacing-lg);
-}
-
 .table-wrapper {
   margin-top: var(--spacing-lg);
-  overflow-x: auto;
 }
 
-table {
+.table-grid {
   width: 100%;
-  min-width: 380px;
+  height: 560px;
+  border-radius: var(--ds-radius-md);
+  overflow: hidden;
 }

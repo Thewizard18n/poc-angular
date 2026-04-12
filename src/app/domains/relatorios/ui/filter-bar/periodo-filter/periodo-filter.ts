@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input, output, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, output, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatNativeDateModule } from '@angular/material/core';
@@ -25,19 +25,16 @@ import { MatMenuModule } from '@angular/material/menu';
 export class PeriodoFilter {
   private readonly rangePicker = viewChild<MatDateRangePicker<Date>>('rangePicker');
 
-  readonly dataInicio = input.required<Date | null>();
-  readonly dataFim = input.required<Date | null>();
-
-  readonly dataInicioChange = output<Date | null>();
-  readonly dataFimChange = output<Date | null>();
+  readonly periodoApply = output<{ dateFrom: Date | null; dateTo: Date | null }>();
   readonly dataCancel = output<void>();
-  readonly dataApply = output<void>();
+  protected dataInicio: Date | null = null;
+  protected dataFim: Date | null = null;
   protected draftDataInicio: Date | null = null;
   protected draftDataFim: Date | null = null;
 
   getLabel(): string {
-    const inicio = this.dataInicio();
-    const fim = this.dataFim();
+    const inicio = this.dataInicio;
+    const fim = this.dataFim;
     if (!inicio || !fim) {
       return 'Periodo';
     }
@@ -46,26 +43,29 @@ export class PeriodoFilter {
   }
 
   hasRange(): boolean {
-    return !!this.dataInicio() && !!this.dataFim();
+    return !!this.dataInicio && !!this.dataFim;
   }
 
   openPicker(event: Event): void {
     event.preventDefault();
     event.stopPropagation();
-    this.draftDataInicio = this.dataInicio();
-    this.draftDataFim = this.dataFim();
+    this.draftDataInicio = this.dataInicio;
+    this.draftDataFim = this.dataFim;
     queueMicrotask(() => this.rangePicker()?.open());
   }
 
   onCancel(): void {
-    this.draftDataInicio = this.dataInicio();
-    this.draftDataFim = this.dataFim();
+    this.draftDataInicio = this.dataInicio;
+    this.draftDataFim = this.dataFim;
   }
 
   onApply(): void {
-    this.dataInicioChange.emit(this.draftDataInicio);
-    this.dataFimChange.emit(this.draftDataFim);
-    this.dataApply.emit();
+    this.dataInicio = this.draftDataInicio;
+    this.dataFim = this.draftDataFim;
+    this.periodoApply.emit({
+      dateFrom: this.draftDataInicio,
+      dateTo: this.draftDataFim,
+    });
   }
 
   private formatDate(date: Date): string {

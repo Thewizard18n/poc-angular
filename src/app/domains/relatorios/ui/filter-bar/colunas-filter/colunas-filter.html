@@ -1,0 +1,35 @@
+<button mat-stroked-button type="button" class="filter-trigger" [matMenuTriggerFor]="colunasMenu">
+  Colunas
+  <mat-icon>arrow_drop_down</mat-icon>
+</button>
+
+<mat-menu #colunasMenu="matMenu" panelClass="filter-menu-no-scroll">
+  <div class="colunas-menu-panel" (click)="$event.stopPropagation()">
+    <input
+      type="text"
+      class="colunas-selected-input"
+      [value]="getColunasSelecionadasLabel()"
+      [title]="getColunasSelecionadasLabel()"
+      disabled
+    />
+
+    <div class="colunas-items-list" cdkDropList (cdkDropListDropped)="onDrop($event)">
+      @for (coluna of colunas(); track coluna.id) {
+        <div class="column-item" cdkDrag>
+          <mat-checkbox
+            class="column-checkbox"
+            color="primary"
+            [checked]="coluna.visible"
+            (click)="$event.stopPropagation()"
+            (change)="colunaToggle.emit(coluna.id)"
+          >
+            {{ coluna.label }}
+          </mat-checkbox>
+          <button mat-icon-button type="button" cdkDragHandle aria-label="Reordenar coluna">
+            <mat-icon>drag_indicator</mat-icon>
+          </button>
+        </div>
+      }
+    </div>
+  </div>
+</mat-menu>

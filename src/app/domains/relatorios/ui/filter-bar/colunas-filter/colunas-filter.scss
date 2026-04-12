@@ -1,28 +1,5 @@
 :host {
-  display: block;
-}
-
-.filters-row {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  justify-content: space-between;
-
-  .filters-row-left {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-md);
-  }
-
-  .filters-row-right {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-md);
-  }
-
-  .filters-row-right mat-slide-toggle {
-    margin-left: auto;
-  }
+  display: inline-block;
 }
 
 .filter-trigger {
@@ -48,8 +25,26 @@
   padding: var(--spacing-sm) var(--spacing-md);
   display: grid;
   gap: var(--spacing-sm);
-  max-height: none;
-  overflow: visible;
+}
+
+.colunas-selected-input {
+  width: 100%;
+  min-height: 36px;
+  border: 1px solid #d0d5dd;
+  border-radius: 6px;
+  padding: 0 10px;
+  font-size: 13px;
+  color: #667085;
+  background: #f5f7fa;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.colunas-items-list {
+  max-height: 280px;
+  overflow-y: auto;
+  padding-right: 4px;
 }
 
 .column-item {
@@ -63,10 +58,6 @@
 }
 
 @media (max-width: 960px) {
-  .filters-row {
-    width: 100%;
-  }
-
   .filter-trigger {
     width: 100%;
     max-width: unset;

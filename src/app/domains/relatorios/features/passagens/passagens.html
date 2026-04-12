@@ -2,28 +2,55 @@
   <div class="passagens-page__header">
     <span>testes</span>
   </div>
-  <ds-card [title]="vm().titulo">
-    <app-filter-bar
-      [vm]="vm()"
-      (veiculoToggle)="usecase.toggleVeiculo($event)"
-      (dataInicioChange)="usecase.atualizarDataInicio($event)"
-      (dataFimChange)="usecase.atualizarDataFim($event)"
-      (dataCancel)="usecase.cancelarFiltroData()"
-      (dataApply)="usecase.aplicarFiltroData()"
-      (horarioInicioChange)="usecase.atualizarHorarioInicio($event)"
-      (horarioFimChange)="usecase.atualizarHorarioFim($event)"
-      (filtrar)="usecase.aplicarFiltros()"
-      (colunaToggle)="usecase.toggleColuna($event)"
-      (colunasReorder)="onReorderColunas($event)"
-      (downloadModeChange)="usecase.alterarModoDownload($event)"
-    />
+  <ds-card>
+    <div class="filters-row" role="group" aria-label="Barra de filtros">
+      <div class="filters-row-left">
+        <app-veiculo-filter
+          (veiculoApply)="onVeiculoApply($event)"
+        />
+        <app-periodo-filter
+          (periodoApply)="onPeriodoApply($event)"
+        />
+        <app-horario-filter
+          (horarioApply)="onHorarioApply($event)"
+        />
+        <ds-button variant="primary" size="md" [disabled]="!podeFiltrar()" (click)="aplicarFiltros()">Filtrar</ds-button>
+      </div>
+
+      <div class="filters-row-right">
+        <button
+          mat-stroked-button
+          type="button"
+          [matMenuTriggerFor]="downloadMenu"
+          [disabled]="!mostrarAcoesPosFiltro()"
+        >
+          Download
+        </button>
+
+        <app-colunas-filter
+          [colunas]="colunas()"
+          (colunaToggle)="toggleColuna($event)"
+          (colunasReorder)="onReorderColunas($event)"
+        />
+
+        <mat-slide-toggle
+          [disabled]="!mostrarAcoesPosFiltro()"
+          aria-label="Habilitar modo de download"
+        />
+      </div>
+    </div>
+
+    <mat-menu #downloadMenu="matMenu">
+      <button mat-menu-item type="button">Download CSV</button>
+      <button mat-menu-item type="button">Download XLSX</button>
+    </mat-menu>
 
     <app-ui-mapa />
 
     <app-ui-filter-table
-      [vm]="vm()"
-      [rows]="rows()"
-      [displayedColumns]="displayedColumns()"
+      [columns]="colunas()"
+      [fetchRows]="fetchRows"
+      [reloadToken]="gridReloadToken()"
     />
   </ds-card>
 </section>

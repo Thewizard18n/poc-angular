@@ -1,17 +1,21 @@
-<button mat-stroked-button type="button" class="filter-trigger" [matMenuTriggerFor]="veiculoMenu">
+<button mat-stroked-button type="button" class="filter-trigger" [matMenuTriggerFor]="veiculoMenu" #veiculoMenuTrigger="matMenuTrigger">
   {{ getLabel() }}
   <mat-icon>arrow_drop_down</mat-icon>
 </button>
 
-<mat-menu #veiculoMenu="matMenu">
+<mat-menu #veiculoMenu="matMenu" panelClass="veiculo-filter-menu-panel">
   <div class="veiculo-menu-panel" (click)="$event.stopPropagation()">
-    @for (veiculo of veiculosDisponiveis(); track veiculo) {
-      <mat-checkbox
-        [checked]="veiculosSelecionados().includes(veiculo)"
-        (click)="onToggleVeiculo($event, veiculo)"
-      >
-        {{ veiculo }}
-      </mat-checkbox>
-    }
+    <app-veiculos-menu
+      [grupos]="filteredGrupos()"
+      [allVeiculos]="allVehicles()"
+      [veiculos]="filteredVehicles()"
+      [automotorChecked]="automotorChecked()"
+      [naoAutomotorChecked]="naoAutomotorChecked()"
+      (tipoToggleChange)="onTipoToggleChange($event)"
+      (searchChange)="onSearchChange($event)"
+      (checkboxChange)="onCheckboxChange($event)"
+      (cancelarClick)="onCancelarSelecao()"
+      (applyClick)="onConfirmarSelecao($event)"
+    />
   </div>
 </mat-menu>

@@ -1,0 +1,164 @@
+<section class="veiculos-menu">
+  <div class="veiculos-menu__tipo">
+    <span class="section-label section-label--tipo">Tipo do veículo:</span>
+    <div class="tipo-toggles">
+      <mat-slide-toggle
+        [checked]="automotorChecked()"
+        (change)="onToggleChange(1, $event.checked)"
+      >
+        <span class="toggle-content">
+          <mat-icon class="toggle-icon">trip_origin</mat-icon>
+          <span>Automotor</span>
+        </span>
+      </mat-slide-toggle>
+      <mat-slide-toggle
+        [checked]="naoAutomotorChecked()"
+        (change)="onToggleChange(0, $event.checked)"
+      >
+        <span class="toggle-content">
+          <mat-icon class="toggle-icon">horizontal_rule</mat-icon>
+          <span>Não Automotor</span>
+        </span>
+      </mat-slide-toggle>
+    </div>
+  </div>
+
+  <div class="veiculos-menu__listas">
+    <div class="list-column">
+      <span class="section-label">Grupos</span>
+      <div class="search-field">
+        <input
+          class="search-field__input"
+          placeholder="Pesquisar grupo"
+          (input)="onGrupoSearch($event)"
+        />
+        <mat-icon class="search-field__icon">search</mat-icon>
+      </div>
+
+      <div class="items-list">
+        <div class="list-item list-item--select-all">
+          <div class="row-main">
+            <mat-checkbox
+              [checked]="allGroupsChecked()"
+              [indeterminate]="allGroupsIndeterminate()"
+              (change)="onSelectAllGrupos($event)"
+            >
+              Selecionar todos
+            </mat-checkbox>
+          </div>
+          <div class="row-meta">
+            <mat-icon>adjust</mat-icon>
+          </div>
+        </div>
+
+        @for (group of gruposTree(); track group.identifierGroup) {
+          <div class="tree-row tree-row--group">
+            <div class="row-main">
+              <mat-checkbox
+                [checked]="isGroupChecked(group)"
+                [indeterminate]="isGroupIndeterminate(group)"
+                [disabled]="false"
+                (click)="$event.stopPropagation()"
+                (change)="onGrupoCheckbox($event, group.identifierGroup)"
+              >
+                <span class="checkbox-inner-label">
+                  @if (hasSubgroups(group)) {
+                    <span
+                      class="checkbox-inner-icon checkbox-inner-icon--clickable"
+                      (click)="$event.stopPropagation(); toggleExpand(group.identifierGroup)"
+                    >
+                      <mat-icon>{{ getGroupChevron(group) }}</mat-icon>
+                    </span>
+                  }
+                  {{ group.nameGroup }}
+                </span>
+              </mat-checkbox>
+            </div>
+            <div class="row-meta">
+              <span>({{ getSelectedVehicleCount(group) }}/{{ group.vehicleCount }})</span>
+              <mat-icon>adjust</mat-icon>
+            </div>
+          </div>
+
+          @if (group.subgroups.length && isExpanded(group.identifierGroup)) {
+            @for (subgroup of group.subgroups; track subgroup.identifierSubGroup) {
+              <div class="tree-row tree-row--subgroup">
+                <div class="row-main">
+                  <mat-checkbox
+                    [checked]="isSubGroupChecked(group.identifierGroup, subgroup.identifierSubGroup)"
+                    [disabled]="false"
+                    (click)="$event.stopPropagation()"
+                    (change)="onSubGrupoCheckbox($event, group.identifierGroup, subgroup.identifierSubGroup)"
+                  >
+                    <span class="checkbox-inner-label">
+                      <span class="checkbox-inner-icon">
+                        <mat-icon>subdirectory_arrow_right</mat-icon>
+                      </span>
+                      {{ subgroup.nameSubGroup }}
+                    </span>
+                  </mat-checkbox>
+                </div>
+              </div>
+            }
+          }
+        } @empty {
+          <span class="empty-state">Nenhum grupo encontrado.</span>
+        }
+      </div>
+    </div>
+
+    <div class="list-column">
+      <span class="section-label">Veículos</span>
+      <div class="search-field">
+        <input
+          class="search-field__input"
+          placeholder="Pesquisar veículo"
+          [disabled]="!veiculosHabilitados()"
+          (input)="onVeiculoSearch($event)"
+        />
+        <mat-icon class="search-field__icon">search</mat-icon>
+      </div>
+
+      <div class="items-list">
+        @if (!veiculosHabilitados()) {
+          <span class="empty-state">Selecione um grupo para listar veículos.</span>
+        } @else {
+          @for (veiculo of veiculos(); track veiculo.id) {
+            <div
+              class="list-item"
+              [class.list-item--active]="isVeiculoSelected(veiculo.id)"
+              (click)="onVeiculoSelect(veiculo)"
+            >
+              <div class="row-main">
+                <mat-checkbox
+                  [checked]="isVeiculoSelected(veiculo.id)"
+                  (click)="$event.stopPropagation()"
+                  (change)="onVeiculoSelect(veiculo)"
+                >
+                  {{ veiculo.displayText }}
+                </mat-checkbox>
+              </div>
+              <div class="row-meta">
+                <mat-icon>adjust</mat-icon>
+              </div>
+            </div>
+          } @empty {
+            <span class="empty-state">Nenhum veículo encontrado para o grupo.</span>
+          }
+        }
+      </div>
+    </div>
+  </div>
+
+  <div class="veiculos-menu__footer">
+    <span class="selected-counter">Veículos selecionados: {{ selectedVeiculoCount() }}</span>
+    <div class="footer-actions">
+      <button type="button" class="footer-button footer-button--ghost" (click)="onCancelar()">
+        Cancelar
+      </button>
+      <button type="button" class="footer-button footer-button--primary" (click)="onApply()">
+        Selecionar
+      </button>
+    </div>
+  </div>
+</section>

@@ -1,23 +1,14 @@
-@if (vm().exibirImagemInicial) {
-  <ds-empty-state
-    title="Nenhum dado filtrado"
-    description="Aplique os filtros para exibir resultados na tabela."
-    icon="image"
+<section class="table-wrapper" aria-label="Tabela de resultados">
+  <ag-grid-angular
+    class="ag-theme-quartz table-grid"
+    [columnDefs]="columnDefs()"
+    [defaultColDef]="defaultColDef"
+    [rowSelection]="rowSelection"
+    [rowModelType]="'infinite'"
+    [cacheBlockSize]="cacheBlockSize"
+    [maxBlocksInCache]="4"
+    [datasource]="datasource"
+    [overlayNoRowsTemplate]="'Nenhum dado filtrado'"
+    (gridReady)="onGridReady($event)"
   />
-} @else {
-  <section class="table-wrapper" aria-label="Tabela de resultados">
-    <table mat-table [dataSource]="rows()" class="mat-elevation-z1">
-      @for (column of vm().colunas; track column.id) {
-        @if (column.visible) {
-          <ng-container [matColumnDef]="column.id">
-            <th mat-header-cell *matHeaderCellDef>{{ column.label }}</th>
-            <td mat-cell *matCellDef="let row">{{ row[column.id] }}</td>
-          </ng-container>
-        }
-      }
-
-      <tr mat-header-row *matHeaderRowDef="displayedColumns()"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns()"></tr>
-    </table>
-  </section>
-}
+</section>

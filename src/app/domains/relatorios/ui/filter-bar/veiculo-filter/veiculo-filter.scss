@@ -21,10 +21,23 @@
 }
 
 .veiculo-menu-panel {
-  width: 340px;
-  padding: var(--spacing-sm) var(--spacing-md);
-  display: grid;
-  gap: var(--spacing-sm);
+  width: max-content;
+  max-width: calc(100vw - 24px);
+  padding: 10px 12px 12px;
+}
+
+.mat-mdc-menu-panel.veiculo-filter-menu-panel {
+  max-width: max-content !important;
+  min-width: max-content !important;
+}
+
+:host ::ng-deep .veiculo-filter-menu-panel.mat-mdc-menu-panel {
+  width: max-content;
+  max-width: calc(100vw - 24px);
+}
+
+:host ::ng-deep .veiculo-filter-menu-panel .mat-mdc-menu-content {
+  padding: 0;
 }
 
 @media (max-width: 960px) {

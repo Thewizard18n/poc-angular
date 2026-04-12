@@ -13,10 +13,15 @@ body {
   padding: 0;
 }
 
+.mat-mdc-menu-panel {
+  max-width: max-content !important;
+}
 body {
   margin: 0;
   font-family: var(--ds-font-family-base);
   background: var(--ds-color-surface);
   color: var(--ds-color-on-surface);
   font: var(--ds-typography-body-medium);
+  --mat-menu-container-max-width: max-content;
+  --mat-menu-container-min-width: max-content;
 }
