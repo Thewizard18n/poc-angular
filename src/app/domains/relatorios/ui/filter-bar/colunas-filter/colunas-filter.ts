@@ -2,14 +2,24 @@ import { CdkDragDrop, DragDropModule } from '@angular/cdk/drag-drop';
 import { Component, input, output } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
 
 import { PassagensColumnConfig, PassagensDataColumnId } from '../../../features/passagens/passagens.models';
 
 @Component({
   selector: 'app-colunas-filter',
-  imports: [DragDropModule, MatButtonModule, MatCheckboxModule, MatIconModule, MatMenuModule],
+  imports: [
+    DragDropModule,
+    MatButtonModule,
+    MatCheckboxModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatInputModule,
+    MatMenuModule,
+  ],
   templateUrl: './colunas-filter.html',
   styleUrl: './colunas-filter.scss',
 })

@@ -1,4 +1,4 @@
-<button mat-stroked-button type="button" class="filter-trigger" [matMenuTriggerFor]="veiculoMenu" #veiculoMenuTrigger="matMenuTrigger">
+<button mat-stroked-button type="button" class="filter-trigger" [matMenuTriggerFor]="veiculoMenu" #vehicleMenuTrigger="matMenuTrigger">
   {{ getLabel() }}
   <mat-icon>arrow_drop_down</mat-icon>
 </button>
@@ -7,15 +7,15 @@
   <div class="veiculo-menu-panel" (click)="$event.stopPropagation()">
     <app-veiculos-menu
       [grupos]="filteredGrupos()"
-      [allVeiculos]="allVehicles()"
-      [veiculos]="filteredVehicles()"
+      [allVehiclesPerGroup]="allVehicles()"
+      [filteredVehiclesPerGroup]="filteredVehicles()"
       [automotorChecked]="automotorChecked()"
       [naoAutomotorChecked]="naoAutomotorChecked()"
-      (tipoToggleChange)="onTipoToggleChange($event)"
-      (searchChange)="onSearchChange($event)"
-      (checkboxChange)="onCheckboxChange($event)"
-      (cancelarClick)="onCancelarSelecao()"
-      (applyClick)="onConfirmarSelecao($event)"
+      (filterByType)="typeVehicleFilter($event)"
+      (filterBySearch)="searchToFilter($event)"
+      (selectGroup)="updateSelectedGroups($event)"
+      (closeMenu)="vehicleMenuTrigger.closeMenu()"
+      (selectVehicle)="selectVehicle($event)"
     />
   </div>
 </mat-menu>

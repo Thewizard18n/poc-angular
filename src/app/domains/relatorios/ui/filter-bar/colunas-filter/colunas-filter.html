@@ -5,13 +5,14 @@
 
 <mat-menu #colunasMenu="matMenu" panelClass="filter-menu-no-scroll">
   <div class="colunas-menu-panel" (click)="$event.stopPropagation()">
-    <input
-      type="text"
-      class="colunas-selected-input"
-      [value]="getColunasSelecionadasLabel()"
-      [title]="getColunasSelecionadasLabel()"
-      disabled
-    />
+    <mat-form-field class="colunas-selected-field" appearance="outline" subscriptSizing="dynamic">
+      <input
+        matInput
+        [value]="getColunasSelecionadasLabel()"
+        [title]="getColunasSelecionadasLabel()"
+        readonly
+      />
+    </mat-form-field>
 
     <div class="colunas-items-list" cdkDropList (cdkDropListDropped)="onDrop($event)">
       @for (coluna of colunas(); track coluna.id) {

@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, output, viewChild } from '@angular/core';
+import { DatePipe } from '@angular/common';
+import { ChangeDetectionStrategy, Component, inject, output, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatNativeDateModule } from '@angular/material/core';
@@ -18,14 +19,17 @@ import { MatMenuModule } from '@angular/material/menu';
     MatNativeDateModule,
     MatMenuModule,
   ],
+  providers:[DatePipe],
   templateUrl: './periodo-filter.html',
   styleUrl: './periodo-filter.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PeriodoFilter {
-  private readonly rangePicker = viewChild<MatDateRangePicker<Date>>('rangePicker');
 
-  readonly periodoApply = output<{ dateFrom: Date | null; dateTo: Date | null }>();
+  private readonly rangePicker = viewChild<MatDateRangePicker<Date>>('rangePicker');
+  private readonly datePipe = inject(DatePipe);
+
+  readonly periodoApply = output<{ dateFrom: string | null; dateTo: string | null }>();
   readonly dataCancel = output<void>();
   protected dataInicio: Date | null = null;
   protected dataFim: Date | null = null;
@@ -63,8 +67,8 @@ export class PeriodoFilter {
     this.dataInicio = this.draftDataInicio;
     this.dataFim = this.draftDataFim;
     this.periodoApply.emit({
-      dateFrom: this.draftDataInicio,
-      dateTo: this.draftDataFim,
+      dateFrom: this.datePipe.transform(this.draftDataInicio, 'yyyy-MM-dd'),
+      dateTo: this.datePipe.transform(this.draftDataFim, 'yyyy-MM-dd'),
     });
   }
 

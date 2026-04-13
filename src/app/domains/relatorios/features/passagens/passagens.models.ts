@@ -1,7 +1,9 @@
 export interface PassagensFilterPayload {
   vehiclesIds: string[];
-  dateFrom: Date | null;
-  dateTo: Date | null;
+  /** ISO date only: YYYY-MM-DD */
+  dateFrom: string | null;
+  /** ISO date only: YYYY-MM-DD */
+  dateTo: string | null;
   timeFrom: string;
   timeTo: string;
 }

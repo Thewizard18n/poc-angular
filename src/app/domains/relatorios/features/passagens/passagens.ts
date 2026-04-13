@@ -47,8 +47,8 @@ export class Passagens {
 
   protected readonly filtersForm = this.formBuilder.group({
     vehiclesIds: this.formBuilder.control<string[]>([], { validators: [Validators.required] }),
-    dateFrom: this.formBuilder.control<Date | null>(null, { validators: [Validators.required] }),
-    dateTo: this.formBuilder.control<Date | null>(null, { validators: [Validators.required] }),
+    dateFrom: this.formBuilder.control<string | null>(null, { validators: [Validators.required] }),
+    dateTo: this.formBuilder.control<string | null>(null, { validators: [Validators.required] }),
     timeFrom: this.formBuilder.control('10:00'),
     timeTo: this.formBuilder.control('00:00'),
   });
@@ -83,11 +83,11 @@ export class Passagens {
     { id: 'digitalUnit3', label: 'Unidade digital 3', visible: true },
   ]);
 
-  protected onVeiculoApply(event: { id: string; displayText: string } | null): void {
-    this.filtersForm.controls.vehiclesIds.setValue(event ? [event.id] : []);
+  protected onVeiculoApply(event: { id: number } | null): void {
+    this.filtersForm.controls.vehiclesIds.setValue(event ? [event.id.toString()] : []);
   }
 
-  protected onPeriodoApply(event: { dateFrom: Date | null; dateTo: Date | null }): void {
+  protected onPeriodoApply(event: { dateFrom: string | null; dateTo: string | null }): void {
     this.filtersForm.controls.dateFrom.setValue(event.dateFrom);
     this.filtersForm.controls.dateTo.setValue(event.dateTo);
   }
@@ -106,7 +106,10 @@ export class Passagens {
     // this.mostrarAcoesPosFiltro.set(true);
     // this.gridReloadToken.update((value) => value + 1);
 
-    console.log(this.filtersForm.getRawValue());
+    const raw = this.filtersForm.getRawValue();
+    console.log({
+      ...raw,
+    });
   }
 
   protected podeFiltrar(): boolean {
@@ -141,7 +144,14 @@ export class Passagens {
       });
     }
 
-    const filter = this.filtersForm.getRawValue() as PassagensFilterPayload;
+    const raw = this.filtersForm.getRawValue();
+    const filter: PassagensFilterPayload = {
+      vehiclesIds: raw.vehiclesIds ?? [],
+      dateFrom: raw.dateFrom,
+      dateTo: raw.dateTo,
+      timeFrom: raw.timeFrom ?? '10:00',
+      timeTo: raw.timeTo ?? '00:00',
+    };
     const payload: PassagensRequestPayload = {
       filter,
       pagination,

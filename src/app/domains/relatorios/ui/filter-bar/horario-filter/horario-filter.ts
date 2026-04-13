@@ -2,17 +2,20 @@ import { Component, output, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatNativeDateModule } from '@angular/material/core';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
 import { MatTimepickerModule } from '@angular/material/timepicker';
-
 
 @Component({
   selector: 'app-horario-filter',
   imports: [
     FormsModule,
     MatButtonModule,
+    MatFormFieldModule,
     MatIconModule,
+    MatInputModule,
     MatMenuModule,
     MatNativeDateModule,
     MatTimepickerModule,
@@ -67,6 +70,7 @@ export class HorarioFilter {
     if (!date) {
       return '';
     }
+
     const hora = date.getHours().toString().padStart(2, '0');
     const minuto = date.getMinutes().toString().padStart(2, '0');
     return `${hora}:${minuto}`;

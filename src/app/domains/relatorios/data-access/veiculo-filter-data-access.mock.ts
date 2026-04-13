@@ -1,6 +1,6 @@
-import { VeiculoFilterGrupoModel, VeiculoFilterVehicleModel } from '../ui/filter-bar/veiculo-filter/veiculo-filter.models';
+import { Groups, Vehicles } from '../ui/filter-bar/veiculo-filter/veiculo-filter.models';
 
-export const VEICULO_FILTER_GRUPOS_MOCK: VeiculoFilterGrupoModel[] = [
+export const VEICULO_FILTER_GRUPOS_MOCK: Groups[] = [
   { auto: 1, identifierGroup: 10, identifierSubGroup: -1, nameGroup: 'Logística', nameSubGroup: null },
   { auto: 1, identifierGroup: 20, identifierSubGroup: -1, nameGroup: 'Comercial', nameSubGroup: null },
   { auto: 0, identifierGroup: 30, identifierSubGroup: -1, nameGroup: 'Serviços', nameSubGroup: null },
@@ -21,7 +21,7 @@ function buildVehicle(
   groups: number[],
   groupNames: string[],
   automotive: number,
-): VeiculoFilterVehicleModel {
+): Vehicles {
   return {
     allowDoorSensor: id % 2 === 0,
     allowFridgeSensor: id % 5 === 0,
@@ -55,7 +55,7 @@ function generateGroupVehicles(
   groups: number[],
   groupNames: string[],
   automotive: number,
-): VeiculoFilterVehicleModel[] {
+): Vehicles[] {
   return Array.from({ length: count }, (_, i) =>
     buildVehicle(
       startId + i,
@@ -67,7 +67,7 @@ function generateGroupVehicles(
   );
 }
 
-export const VEICULO_FILTER_VEHICLES_MOCK: VeiculoFilterVehicleModel[] = [
+export const VEICULO_FILTER_VEHICLES_MOCK: Vehicles[] = [
   // Group 10 - Logística: 40 veículos
   ...generateGroupVehicles(1000, 40, 'LOG', [10], ['Logística'], 1),
   // Group 20 - Comercial: 35 veículos

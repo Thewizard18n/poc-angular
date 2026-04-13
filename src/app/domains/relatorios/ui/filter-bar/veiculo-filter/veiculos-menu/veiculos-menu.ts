@@ -1,252 +1,121 @@
-import { CommonModule } from '@angular/common';
 import { Component, computed, effect, input, output, signal } from '@angular/core';
 import { MatCheckboxChange, MatCheckboxModule } from '@angular/material/checkbox';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { VeiculoFilterGrupoModel, VeiculoFilterVehicleModel } from '../veiculo-filter.models';
+import { Groups, Vehicles } from '../veiculo-filter.models';
+import { buildGruposTree, buildVehicleCountByGroupId } from './grupos-tree.builder';
+import type { GrupoTreeNode, VeiculosMenuApplyEvent, VeiculosMenuCheckboxChangeEvent } from './veiculos-menu.types';
 
-export interface VeiculosMenuCheckboxChangeEvent {
-  id: string;
-  checked: boolean;
-}
-
-export interface VeiculosMenuApplyEvent {
-  id: number;
-  displayText: string;
-}
-
-interface GrupoTreeNode {
-  identifierGroup: number;
-  nameGroup: string;
-  subgroups: GrupoTreeSubgroupNode[];
-  vehicleCount: number;
-}
-
-interface GrupoTreeSubgroupNode {
-  identifierSubGroup: number;
-  nameSubGroup: string;
-}
+export type { VeiculosMenuApplyEvent, VeiculosMenuCheckboxChangeEvent } from './veiculos-menu.types';
 
 @Component({
   selector: 'app-veiculos-menu',
   standalone: true,
-  imports: [
-    CommonModule,
-    MatCheckboxModule,
-    MatIconModule,
-    MatSlideToggleModule,
-  ],
+  imports: [MatCheckboxModule, MatFormFieldModule, MatIconModule, MatInputModule, MatSlideToggleModule],
   templateUrl: './veiculos-menu.html',
   styleUrl: './veiculos-menu.scss',
 })
 export class VeiculosMenu {
-  readonly grupos = input.required<VeiculoFilterGrupoModel[]>();
-  readonly allVeiculos = input.required<VeiculoFilterVehicleModel[]>();
-  readonly veiculos = input.required<VeiculoFilterVehicleModel[]>();
+  readonly grupos = input.required<Groups[]>();
+  readonly allVehiclesPerGroup = input.required<Vehicles[]>();
+  readonly filteredVehiclesPerGroup = input.required<Vehicles[]>();
   readonly automotorChecked = input(true);
   readonly naoAutomotorChecked = input(true);
 
-  readonly tipoToggleChange = output<{ toggleId: number; checked: boolean }>();
-  readonly searchChange = output<{ source: 'grupos' | 'veiculos'; value: string }>();
-  readonly checkboxChange = output<VeiculosMenuCheckboxChangeEvent>();
-  readonly cancelarClick = output<void>();
-  readonly applyClick = output<VeiculosMenuApplyEvent | null>();
+  readonly filterByType = output<{ toggleId: number; checked: boolean }>();
+  readonly filterBySearch = output<{ source: 'grupos' | 'veiculos'; value: string }>();
+  readonly selectGroup = output<VeiculosMenuCheckboxChangeEvent>();
+  readonly closeMenu = output<void>();
+  readonly selectVehicle = output<VeiculosMenuApplyEvent | null>();
 
   private readonly expandedGroupIds = signal<Set<number>>(new Set());
   private readonly selectedGroupIds = signal<Set<number>>(new Set());
-  private readonly selectedSubGroupKeys = signal<Set<string>>(new Set());
-  private readonly selectedVeiculoId = signal<number | null>(null);
-  private expandedInitialized = false;
+  private readonly selectedSubgroupKeys = signal<Set<string>>(new Set());
+  private readonly selectedVehicleId = signal<number | null>(null);
+  private hasInitializedExpandedGroups = false;
 
-  protected readonly veiculosHabilitados = computed(
-    () => this.selectedGroupIds().size > 0 || this.selectedSubGroupKeys().size > 0,
+  protected readonly gruposTree = computed(() =>
+    buildGruposTree(this.grupos(), buildVehicleCountByGroupId(this.allVehiclesPerGroup())),
   );
 
-  protected readonly selectedVeiculoCount = computed(() => (this.selectedVeiculoId() ? 1 : 0));
+  protected readonly filteredVehicleCountMap = computed(() =>
+    buildVehicleCountByGroupId(this.filteredVehiclesPerGroup()),
+  );
+
+  protected readonly vehiclesEnabled = computed(
+    () => this.selectedGroupIds().size > 0 || this.selectedSubgroupKeys().size > 0,
+  );
+
+  protected readonly allGroupsChecked = computed(() => {
+    const tree = this.gruposTree();
+    return tree.length > 0 && tree.every((group) => this.isGroupChecked(group));
+  });
+
+  protected readonly allGroupsIndeterminate = computed(() => {
+    const tree = this.gruposTree();
+    if (!tree.length || this.allGroupsChecked()) return false;
+    return tree.some((group) => this.isGroupChecked(group) || this.isGroupIndeterminate(group));
+  });
+
+  protected readonly selectedVehicleCount = computed(() => (this.selectedVehicleId() ? 1 : 0));
 
   constructor() {
     effect(() => {
       const tree = this.gruposTree();
-      if (this.expandedInitialized || tree.length === 0) return;
-      this.expandedInitialized = true;
+      if (this.hasInitializedExpandedGroups || tree.length === 0) return;
+      this.hasInitializedExpandedGroups = true;
       this.expandedGroupIds.set(
-        new Set(tree.filter((g) => g.subgroups.length > 0).map((g) => g.identifierGroup)),
+        new Set(tree.filter((group) => group.subgroups.length > 0).map((group) => group.identifierGroup)),
       );
     });
   }
 
-  // O(V*K + N) — V=vehicles, K=avg groups/vehicle, N=flat grupo entries
-  protected readonly gruposTree = computed<GrupoTreeNode[]>(() => {
-    const grupos = this.grupos();
-    const allVeiculos = this.allVeiculos();
+  protected updateVehicleTypeFilter(toggleId: number, checked: boolean): void {
+    this.filterByType.emit({ toggleId, checked });
+  }
 
-    const countByGroupId = new Map<number, number>();
-    for (const v of allVeiculos) {
-      for (const gId of v.groups) {
-        countByGroupId.set(gId, (countByGroupId.get(gId) ?? 0) + 1);
-      }
-    }
+  protected filterGroupsBySearch(event: Event): void {
+    this.filterBySearch.emit({ source: 'grupos', value: (event.target as HTMLInputElement).value });
+  }
 
-    const groupMap = new Map<number, VeiculoFilterGrupoModel[]>();
-    for (const g of grupos) {
-      let entries = groupMap.get(g.identifierGroup);
-      if (!entries) {
-        entries = [];
-        groupMap.set(g.identifierGroup, entries);
-      }
-      entries.push(g);
-    }
+  protected filterVehiclesBySearch(event: Event): void {
+    this.filterBySearch.emit({ source: 'veiculos', value: (event.target as HTMLInputElement).value });
+  }
 
-    const tree: GrupoTreeNode[] = [];
-    for (const [identifierGroup, entries] of groupMap) {
-      const rootEntry = entries.find((e) => e.identifierSubGroup === -1) ?? entries[0];
-      const subgroups: GrupoTreeSubgroupNode[] = [];
-
-      if (entries.length > 1) {
-        const seen = new Set<number>();
-        for (const entry of entries) {
-          if (entry.identifierSubGroup === -1 || !entry.nameSubGroup) continue;
-          if (seen.has(entry.identifierSubGroup)) continue;
-          seen.add(entry.identifierSubGroup);
-          subgroups.push({
-            identifierSubGroup: entry.identifierSubGroup,
-            nameSubGroup: entry.nameSubGroup,
-          });
-        }
-      }
-
-      let vehicleCount = countByGroupId.get(identifierGroup) ?? 0;
-      for (const sg of subgroups) {
-        vehicleCount += countByGroupId.get(sg.identifierSubGroup) ?? 0;
-      }
-
-      tree.push({ identifierGroup, nameGroup: rootEntry.nameGroup, subgroups, vehicleCount });
-    }
-
-    return tree;
-  });
-
-  // O(V*K) — precomputed map for filtered vehicle counts
-  private readonly filteredVehicleCountMap = computed(() => {
-    const map = new Map<number, number>();
-    for (const v of this.veiculos()) {
-      for (const gId of v.groups) {
-        map.set(gId, (map.get(gId) ?? 0) + 1);
-      }
-    }
-    return map;
-  });
-
-  protected readonly allGroupsChecked = computed(() => {
+  protected toggleAllGroupsSelection(event: MatCheckboxChange): void {
     const tree = this.gruposTree();
-    return tree.length > 0 && tree.every((g) => this.isGroupChecked(g));
-  });
-
-  protected readonly allGroupsIndeterminate = computed(() => {
-    if (this.allGroupsChecked()) return false;
-    return this.gruposTree().some((g) => this.isGroupChecked(g) || this.isGroupIndeterminate(g));
-  });
-
-  protected isExpanded(id: number): boolean {
-    return this.expandedGroupIds().has(id);
-  }
-
-  protected toggleExpand(id: number): void {
-    this.expandedGroupIds.update((current) => {
-      const next = new Set(current);
-      next.has(id) ? next.delete(id) : next.add(id);
-      return next;
-    });
-  }
-
-  protected hasSubgroups(group: GrupoTreeNode): boolean {
-    return group.subgroups.length > 0;
-  }
-
-  protected getGroupChevron(group: GrupoTreeNode): string {
-    if (!this.hasSubgroups(group)) return 'chevron_right';
-    return this.isExpanded(group.identifierGroup) ? 'expand_more' : 'chevron_right';
-  }
-
-  protected isGroupChecked(group: GrupoTreeNode): boolean {
-    if (!this.hasSubgroups(group)) {
-      return this.selectedGroupIds().has(group.identifierGroup);
-    }
-    const keys = this.selectedSubGroupKeys();
-    return group.subgroups.every((sg) =>
-      keys.has(this.buildKey(group.identifierGroup, sg.identifierSubGroup)),
-    );
-  }
-
-  protected isGroupIndeterminate(group: GrupoTreeNode): boolean {
-    if (!this.hasSubgroups(group)) return false;
-    const keys = this.selectedSubGroupKeys();
-    let count = 0;
-    for (const sg of group.subgroups) {
-      if (keys.has(this.buildKey(group.identifierGroup, sg.identifierSubGroup))) count++;
-    }
-    return count > 0 && count < group.subgroups.length;
-  }
-
-  protected isSubGroupChecked(groupId: number, subGroupId: number): boolean {
-    return this.selectedSubGroupKeys().has(this.buildKey(groupId, subGroupId));
-  }
-
-  protected isVeiculoSelected(id: number): boolean {
-    return this.selectedVeiculoId() === id;
-  }
-
-  protected getSelectedVehicleCount(group: GrupoTreeNode): number {
-    const map = this.filteredVehicleCountMap();
-    let count = map.get(group.identifierGroup) ?? 0;
-    for (const sg of group.subgroups) {
-      count += map.get(sg.identifierSubGroup) ?? 0;
-    }
-    return count;
-  }
-
-  onToggleChange(toggleId: number, checked: boolean): void {
-    this.tipoToggleChange.emit({ toggleId, checked });
-  }
-
-  onGrupoSearch(event: Event): void {
-    this.searchChange.emit({ source: 'grupos', value: (event.target as HTMLInputElement).value });
-  }
-
-  onVeiculoSearch(event: Event): void {
-    this.searchChange.emit({ source: 'veiculos', value: (event.target as HTMLInputElement).value });
-  }
-
-  onSelectAllGrupos(event: MatCheckboxChange): void {
-    const tree = this.gruposTree();
-
     if (event.checked) {
-      this.selectedGroupIds.set(new Set(tree.map((g) => g.identifierGroup)));
-      this.selectedSubGroupKeys.set(
+      this.selectedGroupIds.set(new Set(tree.map((group) => group.identifierGroup)));
+      this.selectedSubgroupKeys.set(
         new Set(
-          tree.flatMap((g) =>
-            g.subgroups.map((sg) => this.buildKey(g.identifierGroup, sg.identifierSubGroup)),
+          tree.flatMap((group) =>
+            group.subgroups.map((subgroup) =>
+              this.buildSubgroupKey(group.identifierGroup, subgroup.identifierSubGroup),
+            ),
           ),
         ),
       );
     } else {
       this.selectedGroupIds.set(new Set());
-      this.selectedSubGroupKeys.set(new Set());
+      this.selectedSubgroupKeys.set(new Set());
     }
 
-    for (const g of tree) {
-      this.checkboxChange.emit({ id: g.identifierGroup.toString(), checked: event.checked });
+    for (const group of tree) {
+      this.selectGroup.emit({ id: group.identifierGroup.toString(), checked: event.checked });
     }
   }
 
-  onGrupoCheckbox(event: MatCheckboxChange, groupId: number): void {
-    const group = this.gruposTree().find((g) => g.identifierGroup === groupId);
+  protected toggleGroupSelection(event: MatCheckboxChange, groupId: number): void {
+    const tree = this.gruposTree();
+    const group = tree.find((item) => item.identifierGroup === groupId);
 
     if (group?.subgroups.length) {
-      this.selectedSubGroupKeys.update((current) => {
+      this.selectedSubgroupKeys.update((current) => {
         const next = new Set(current);
-        for (const sg of group.subgroups) {
-          const key = this.buildKey(groupId, sg.identifierSubGroup);
+        for (const subgroup of group.subgroups) {
+          const key = this.buildSubgroupKey(groupId, subgroup.identifierSubGroup);
           event.checked ? next.add(key) : next.delete(key);
         }
         return next;
@@ -259,23 +128,24 @@ export class VeiculosMenu {
       return next;
     });
 
-    this.checkboxChange.emit({ id: groupId.toString(), checked: event.checked });
+    this.selectGroup.emit({ id: groupId.toString(), checked: event.checked });
   }
 
-  onSubGrupoCheckbox(event: MatCheckboxChange, groupId: number, subGroupId: number): void {
-    const key = this.buildKey(groupId, subGroupId);
-    this.selectedSubGroupKeys.update((current) => {
+  protected toggleSubgroupSelection(event: MatCheckboxChange, groupId: number, subGroupId: number): void {
+    const tree = this.gruposTree();
+    const key = this.buildSubgroupKey(groupId, subGroupId);
+    this.selectedSubgroupKeys.update((current) => {
       const next = new Set(current);
       event.checked ? next.add(key) : next.delete(key);
       return next;
     });
 
-    const group = this.gruposTree().find((g) => g.identifierGroup === groupId);
+    const group = tree.find((item) => item.identifierGroup === groupId);
     if (group?.subgroups.length) {
-      const allChecked = group.subgroups.every((sg) =>
-        sg.identifierSubGroup === subGroupId
+      const allChecked = group.subgroups.every((subgroup) =>
+        subgroup.identifierSubGroup === subGroupId
           ? event.checked
-          : this.selectedSubGroupKeys().has(this.buildKey(groupId, sg.identifierSubGroup)),
+          : this.selectedSubgroupKeys().has(this.buildSubgroupKey(groupId, subgroup.identifierSubGroup)),
       );
 
       this.selectedGroupIds.update((current) => {
@@ -285,29 +155,97 @@ export class VeiculosMenu {
       });
     }
 
-    this.checkboxChange.emit({ id: `${groupId}:${subGroupId}`, checked: event.checked });
+    this.selectGroup.emit({ id: `${groupId}:${subGroupId}`, checked: event.checked });
   }
 
-  protected onVeiculoSelect(veiculo: VeiculoFilterVehicleModel): void {
-    const current = this.selectedVeiculoId();
-    this.selectedVeiculoId.set(current === veiculo.id ? null : veiculo.id);
+  protected toggleGroupExpansion(groupId: number): void {
+    this.expandedGroupIds.update((current) => {
+      const next = new Set(current);
+      next.has(groupId) ? next.delete(groupId) : next.add(groupId);
+      return next;
+    });
   }
 
-  onApply(): void {
-    const id = this.selectedVeiculoId();
-    if (!id) {
-      this.applyClick.emit(null);
-      return;
+  protected isGroupExpanded(groupId: number): boolean {
+    return this.expandedGroupIds().has(groupId);
+  }
+
+  protected isGroupChecked(group: GrupoTreeNode): boolean {
+    if (!group.subgroups.length) {
+      return this.selectedGroupIds().has(group.identifierGroup);
     }
-    const veiculo = this.veiculos().find((v) => v.id === id);
-    this.applyClick.emit(veiculo ? { id: veiculo.id, displayText: veiculo.displayText } : null);
+
+    const keys = this.selectedSubgroupKeys();
+    return group.subgroups.every((subgroup) =>
+      keys.has(this.buildSubgroupKey(group.identifierGroup, subgroup.identifierSubGroup)),
+    );
   }
 
-  onCancelar(): void {
-    this.cancelarClick.emit();
+  protected isGroupIndeterminate(group: GrupoTreeNode): boolean {
+    if (!group.subgroups.length) return false;
+    const keys = this.selectedSubgroupKeys();
+    let selectedSubgroupCount = 0;
+    for (const subgroup of group.subgroups) {
+      if (keys.has(this.buildSubgroupKey(group.identifierGroup, subgroup.identifierSubGroup))) {
+        selectedSubgroupCount++;
+      }
+    }
+    return selectedSubgroupCount > 0 && selectedSubgroupCount < group.subgroups.length;
   }
 
-  private buildKey(groupId: number, subGroupId: number): string {
+  protected isSubgroupChecked(groupId: number, subGroupId: number): boolean {
+    return this.selectedSubgroupKeys().has(this.buildSubgroupKey(groupId, subGroupId));
+  }
+
+  protected getSelectedVehicleCount(group: GrupoTreeNode): number {
+    const map = this.filteredVehicleCountMap();
+    let count = map.get(group.identifierGroup) ?? 0;
+    for (const subgroup of group.subgroups) {
+      count += map.get(subgroup.identifierSubGroup) ?? 0;
+    }
+    return count;
+  }
+
+  protected getGroupChevron(group: GrupoTreeNode): string {
+    if (!group.subgroups.length) return 'chevron_right';
+    return this.isGroupExpanded(group.identifierGroup) ? 'expand_more' : 'chevron_right';
+  }
+
+  protected isVehicleSelected(vehicleId: number): boolean {
+    return this.selectedVehicleId() === vehicleId;
+  }
+
+  protected toggleVehicleSelection(vehicle: Vehicles): void {
+    const current = this.selectedVehicleId();
+    this.selectedVehicleId.set(current === vehicle.id ? null : vehicle.id);
+  }
+
+  protected applyVehicleSelection(): void {
+    const payload = this.resolveApplyPayload(this.filteredVehiclesPerGroup());
+    if (payload !== undefined) {
+      this.selectVehicle.emit(payload);
+    }
+  }
+
+  protected cancelVehicleSelection(): void {
+    this.closeMenu.emit();
+  }
+
+  protected stopEventPropagation(event: Event): void {
+    event.stopPropagation();
+  }
+
+  private resolveApplyPayload(vehicles: Vehicles[]): VeiculosMenuApplyEvent | null | undefined {
+    const selectedVehicleId = this.selectedVehicleId();
+    if (!selectedVehicleId) return undefined;
+
+    const selectedVehicle = vehicles.find((vehicle) => vehicle.id === selectedVehicleId);
+    return selectedVehicle
+      ? { id: selectedVehicle.id, displayText: selectedVehicle.displayText }
+      : null;
+  }
+
+  private buildSubgroupKey(groupId: number, subGroupId: number): string {
     return `${groupId}:${subGroupId}`;
   }
 }

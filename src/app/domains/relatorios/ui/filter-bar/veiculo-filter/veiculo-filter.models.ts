@@ -1,4 +1,4 @@
-export interface VeiculoFilterGrupoModel {
+export interface Groups {
   auto: number;
   identifierGroup: number;
   identifierSubGroup: number;
@@ -6,7 +6,7 @@ export interface VeiculoFilterGrupoModel {
   nameSubGroup: string | null;
 }
 
-export interface VeiculoFilterVehicleModel {
+export interface Vehicles {
   allowDoorSensor: boolean;
   allowFridgeSensor: boolean;
   allowJourneyDriver: boolean;

@@ -27,15 +27,20 @@
   gap: var(--spacing-sm);
 }
 
-.colunas-selected-input {
+.colunas-selected-field {
   width: 100%;
-  min-height: 36px;
-  border: 1px solid #d0d5dd;
-  border-radius: 6px;
-  padding: 0 10px;
-  font-size: 13px;
+}
+
+:host ::ng-deep .colunas-selected-field .mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}
+
+:host ::ng-deep .colunas-selected-field .mdc-text-field--outlined .mdc-notched-outline {
+  color: #d0d5dd;
+}
+
+:host ::ng-deep .colunas-selected-field input[readonly] {
   color: #667085;
-  background: #f5f7fa;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

@@ -1,17 +1,17 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { delay } from 'rxjs/operators';
-import { VeiculoFilterGrupoModel, VeiculoFilterVehicleModel } from '../ui/filter-bar/veiculo-filter/veiculo-filter.models';
+import { Groups, Vehicles } from '../ui/filter-bar/veiculo-filter/veiculo-filter.models';
 
 import { VEICULO_FILTER_GRUPOS_MOCK, VEICULO_FILTER_VEHICLES_MOCK } from './veiculo-filter-data-access.mock';
 
 @Injectable({ providedIn: 'root' })
 export class VeiculoFilterRepository {
-  getGrupos(): Observable<VeiculoFilterGrupoModel[]> {
+  getGrupos(): Observable<Groups[]> {
     return of(VEICULO_FILTER_GRUPOS_MOCK).pipe(delay(200));
   }
 
-  getVehicles(): Observable<VeiculoFilterVehicleModel[]> {
+  getVehicles(): Observable<Vehicles[]> {
     return of(VEICULO_FILTER_VEHICLES_MOCK).pipe(delay(200));
   }
 }
