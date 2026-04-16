@@ -2,7 +2,8 @@
   <div class="passagens-page__header">
     <span>testes</span>
   </div>
-  <ds-card>
+
+  <ds-card class="filters-card">
     <div class="filters-row" role="group" aria-label="Barra de filtros">
       <div class="filters-row-left">
         <app-veiculo-filter
@@ -44,13 +45,26 @@
       <button mat-menu-item type="button">Download CSV</button>
       <button mat-menu-item type="button">Download XLSX</button>
     </mat-menu>
+  </ds-card>
 
-    <app-ui-mapa />
+  <app-ui-mapa />
 
+  @if (mostrarAcoesPosFiltro()) {
     <app-ui-filter-table
+      class="table-area"
       [columns]="colunas()"
       [fetchRows]="fetchRows"
       [reloadToken]="gridReloadToken()"
     />
-  </ds-card>
+  } @else {
+    <div class="empty-state-area">
+      <div class="empty-state">
+        <div class="empty-state__image">
+          <mat-icon>search</mat-icon>
+        </div>
+        <h2 class="empty-state__title">Nenhum dado para exibir</h2>
+        <p class="empty-state__subtitle">Selecione os filtros acima e clique em Filtrar para visualizar os dados.</p>
+      </div>
+    </div>
+  }
 </section>

@@ -1,10 +1,11 @@
-import { ChangeDetectionStrategy, Component, computed, effect, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, input, ViewEncapsulation } from '@angular/core';
 import { AgGridAngular } from 'ag-grid-angular';
 import {
   AllCommunityModule,
   ColDef,
   GridApi,
   GridReadyEvent,
+  ICellRendererParams,
   IDatasource,
   IGetRowsParams,
   ModuleRegistry,
@@ -18,8 +19,76 @@ import {
   PassagensDataColumnId,
   PassagensResponse,
 } from '../../features/passagens/passagens.models';
+import { CheckboxCellRenderer } from './checkbox-cell';
+import { CheckboxHeaderRenderer } from './checkbox-header';
 
 ModuleRegistry.registerModules([AllCommunityModule]);
+
+export interface TableGridContext {
+  selectAllActive: boolean;
+}
+
+function locationCellRenderer(params: ICellRendererParams<PassagemPosition>): string {
+  const raw = params.value as string | undefined;
+  if (!raw) return '';
+
+  const newlineIdx = raw.indexOf('\n');
+  if (newlineIdx > -1) {
+    const title = raw.substring(0, newlineIdx);
+    const address = raw.substring(newlineIdx + 1);
+    return `<div class="location-cell">
+      <span class="location-cell__title">${title}</span>
+      <span class="location-cell__address">${address}</span>
+    </div>`;
+  }
+
+  const separatorIdx = raw.indexOf(' - ');
+  if (separatorIdx > 20) {
+    const title = raw.substring(0, separatorIdx);
+    const address = raw.substring(separatorIdx + 3);
+    return `<div class="location-cell">
+      <span class="location-cell__title">${title}</span>
+      <span class="location-cell__address">${address}</span>
+    </div>`;
+  }
+
+  return `<div class="location-cell">
+    <span class="location-cell__title">${raw}</span>
+  </div>`;
+}
+
+const COLUMN_DEF_REGISTRY: Record<string, ColDef<PassagemPosition>> = {
+  vehicleDisplay: { field: 'vehicleDisplay', headerName: 'Veiculo', width: 120 },
+  positionDatetime: { field: 'positionDatetime', headerName: 'Date & Time', width: 150, sort: 'desc' },
+  positionReceivedAt: { field: 'positionReceivedAt', headerName: 'Data posicao recebida', width: 160 },
+  driverName: { field: 'driverName', headerName: 'Motorista', width: 130 },
+  speed: { field: 'speed', headerName: 'Speed', width: 90 },
+  ignition: { field: 'ignition', headerName: 'Ignition', width: 100 },
+  blocking: { field: 'blocking', headerName: 'Bloqueio', width: 100 },
+  battery: { field: 'battery', headerName: 'Bateria', width: 90 },
+  location: {
+    field: 'location',
+    headerName: 'Location',
+    width: 280,
+    cellRenderer: locationCellRenderer,
+    autoHeight: false,
+  },
+  hourmeter: { field: 'hourmeter', headerName: 'Hour meter', width: 120 },
+  latitudeLongitude: { field: 'latitudeLongitude', headerName: 'Latitude / Longitude', width: 200 },
+  satellite: { field: 'satellite', headerName: 'Satellite', width: 90 },
+  memory: { field: 'memory', headerName: 'Memory', width: 90 },
+  gps: { field: 'gps', headerName: 'GPS', width: 70 },
+  temperature1: { field: 'temperature1', headerName: 'Temperatura 1', width: 120 },
+  temperature2: { field: 'temperature2', headerName: 'Temperatura 2', width: 120 },
+  temperature3: { field: 'temperature3', headerName: 'Temperatura 3', width: 120 },
+  odometer: { field: 'odometer', headerName: 'Hodometro', width: 110 },
+  digitalTemperature1: { field: 'digitalTemperature1', headerName: 'Temperatura digital 1', width: 160 },
+  digitalTemperature2: { field: 'digitalTemperature2', headerName: 'Temperatura digital 2', width: 160 },
+  digitalTemperature3: { field: 'digitalTemperature3', headerName: 'Temperatura digital 3', width: 160 },
+  digitalUnit1: { field: 'digitalUnit1', headerName: 'Unidade digital 1', width: 150 },
+  digitalUnit2: { field: 'digitalUnit2', headerName: 'Unidade digital 2', width: 150 },
+  digitalUnit3: { field: 'digitalUnit3', headerName: 'Unidade digital 3', width: 150 },
+};
 
 @Component({
   selector: 'app-ui-filter-table',
@@ -27,61 +96,59 @@ ModuleRegistry.registerModules([AllCommunityModule]);
   templateUrl: './ui-filter-table.html',
   styleUrl: './ui-filter-table.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  encapsulation: ViewEncapsulation.None,
 })
 export class UiFilterTable {
   readonly columns = input.required<PassagensColumnConfig[]>();
   readonly fetchRows = input.required<(pagination: PaginationPayload) => Observable<PassagensResponse>>();
   readonly reloadToken = input(0);
+
   protected readonly cacheBlockSize = 100;
+  protected readonly rowHeight = 56;
+  protected readonly headerHeight = 44;
+
+  protected readonly gridContext: TableGridContext = { selectAllActive: false };
+
   protected readonly rowSelection = {
     mode: 'multiRow',
-    checkboxes: true,
-    headerCheckbox: true,
+    checkboxes: false,
+    headerCheckbox: false,
     enableClickSelection: false,
-    selectAll: 'all',
   } as const;
+
   protected readonly defaultColDef: ColDef<PassagemPosition> = {
     sortable: true,
     resizable: true,
-    minWidth: 140,
+    minWidth: 100,
+    suppressMovable: true,
   };
-  protected datasource: IDatasource = this.createDatasource();
-  protected readonly columnDefs = computed<ColDef<PassagemPosition>[]>(() => {
-    const visibility = new Map(this.columns().map((column) => [column.id, column.visible]));
-    const allColumns: ColDef<PassagemPosition>[] = [
-      { field: 'vehicleDisplay', headerName: 'Veiculo' },
-      { field: 'positionDatetime', headerName: 'Data/Hora' },
-      { field: 'positionReceivedAt', headerName: 'Data posicao recebida' },
-      { field: 'driverName', headerName: 'Motorista' },
-      { field: 'speed', headerName: 'Velocidade' },
-      { field: 'ignition', headerName: 'Ignicao' },
-      { field: 'blocking', headerName: 'Bloqueio' },
-      { field: 'battery', headerName: 'Bateria' },
-      { field: 'memory', headerName: 'Memoria' },
-      { field: 'gps', headerName: 'GPS' },
-      { field: 'satellite', headerName: 'Satelite' },
-      { field: 'latitudeLongitude', headerName: 'Latitude / Longitude' },
-      { field: 'location', headerName: 'Localizacao' },
-      { field: 'temperature1', headerName: 'Temperatura 1' },
-      { field: 'temperature2', headerName: 'Temperatura 2' },
-      { field: 'temperature3', headerName: 'Temperatura 3' },
-      { field: 'odometer', headerName: 'Hodometro' },
-      { field: 'hourmeter', headerName: 'Horimetro' },
-      { field: 'digitalTemperature1', headerName: 'Temperatura digital 1' },
-      { field: 'digitalTemperature2', headerName: 'Temperatura digital 2' },
-      { field: 'digitalTemperature3', headerName: 'Temperatura digital 3' },
-      { field: 'digitalUnit1', headerName: 'Unidade digital 1' },
-      { field: 'digitalUnit2', headerName: 'Unidade digital 2' },
-      { field: 'digitalUnit3', headerName: 'Unidade digital 3' },
-    ];
 
-    return allColumns.map((columnDef) => {
-      const columnId = columnDef.field as PassagensDataColumnId;
-      return {
-        ...columnDef,
-        hide: visibility.get(columnId) === false,
-      };
-    });
+  protected datasource: IDatasource = this.createDatasource();
+
+  protected readonly columnDefs = computed<ColDef<PassagemPosition>[]>(() => {
+    const checkboxCol: ColDef<PassagemPosition> = {
+      headerName: '',
+      width: 52,
+      maxWidth: 52,
+      minWidth: 52,
+      headerComponent: CheckboxHeaderRenderer,
+      cellRenderer: CheckboxCellRenderer,
+      sortable: false,
+      resizable: false,
+      pinned: 'left',
+      lockPosition: true,
+      suppressHeaderMenuButton: true,
+    };
+
+    const orderedDataColumns: ColDef<PassagemPosition>[] = [];
+    for (const config of this.columns()) {
+      const baseDef = COLUMN_DEF_REGISTRY[config.id];
+      if (baseDef) {
+        orderedDataColumns.push({ ...baseDef, hide: !config.visible });
+      }
+    }
+
+    return [checkboxCol, ...orderedDataColumns];
   });
 
   private gridApi?: GridApi<PassagemPosition>;
@@ -91,6 +158,7 @@ export class UiFilterTable {
     effect(() => {
       this.reloadToken();
       if (this.gridApi) {
+        this.gridContext.selectAllActive = false;
         this.resetDatasource();
       }
     });
@@ -104,6 +172,10 @@ export class UiFilterTable {
   private createDatasource(): IDatasource {
     return {
       getRows: (params: IGetRowsParams) => {
+        if (params.startRow === 0) {
+          this.maxCreatedAt = 0;
+        }
+
         const sort = params.sortModel?.[0];
         const pagination: PaginationPayload = {
           maxCreatedAt: this.maxCreatedAt,
@@ -113,16 +185,25 @@ export class UiFilterTable {
           orderDirection: sort?.sort === 'asc' ? 'asc' : 'desc',
         };
 
-        this.fetchRows()(
-          pagination,
-        )
-          .pipe(catchError(() => {
-            params.failCallback();
-            return EMPTY;
-          }))
+        this.fetchRows()(pagination)
+          .pipe(
+            catchError(() => {
+              params.failCallback();
+              return EMPTY;
+            }),
+          )
           .subscribe((response) => {
             this.maxCreatedAt = response.maxCreatedAt;
             params.successCallback(response.Positions, response.totalCount);
+
+            if (this.gridContext.selectAllActive) {
+              this.gridApi?.forEachNode((node) => {
+                if (node.data && !node.isSelected()) {
+                  node.setSelected(true);
+                }
+              });
+              this.gridApi?.refreshCells({ force: true });
+            }
           });
       },
     };

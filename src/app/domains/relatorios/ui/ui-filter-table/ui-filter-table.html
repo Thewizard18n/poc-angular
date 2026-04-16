@@ -1,14 +1,16 @@
-<section class="table-wrapper" aria-label="Tabela de resultados">
-  <ag-grid-angular
-    class="ag-theme-quartz table-grid"
-    [columnDefs]="columnDefs()"
-    [defaultColDef]="defaultColDef"
-    [rowSelection]="rowSelection"
-    [rowModelType]="'infinite'"
-    [cacheBlockSize]="cacheBlockSize"
-    [maxBlocksInCache]="4"
-    [datasource]="datasource"
-    [overlayNoRowsTemplate]="'Nenhum dado filtrado'"
-    (gridReady)="onGridReady($event)"
-  />
-</section>
+<ag-grid-angular
+  class="ag-theme-quartz table-grid"
+  [columnDefs]="columnDefs()"
+  [defaultColDef]="defaultColDef"
+  [rowSelection]="rowSelection"
+  [rowModelType]="'infinite'"
+  [rowHeight]="rowHeight"
+  [headerHeight]="headerHeight"
+  [cacheBlockSize]="cacheBlockSize"
+  [maxBlocksInCache]="4"
+  [datasource]="datasource"
+  [context]="gridContext"
+  [suppressCellFocus]="true"
+  [overlayNoRowsTemplate]="'Nenhum dado filtrado'"
+  (gridReady)="onGridReady($event)"
+/>

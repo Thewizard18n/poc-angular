@@ -1,6 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { Observable, of } from 'rxjs';
@@ -31,6 +32,7 @@ import { PassagensUsecase } from './passagens-usecase';
     DsCard,
     HorarioFilter,
     MatButtonModule,
+    MatIconModule,
     MatMenuModule,
     MatSlideToggleModule,
     PeriodoFilter,
@@ -103,13 +105,13 @@ export class Passagens {
       return;
     }
 
-    // this.mostrarAcoesPosFiltro.set(true);
-    // this.gridReloadToken.update((value) => value + 1);
+    this.mostrarAcoesPosFiltro.set(true);
+    this.gridReloadToken.update((value) => value + 1);
 
-    const raw = this.filtersForm.getRawValue();
-    console.log({
-      ...raw,
-    });
+    // const raw = this.filtersForm.getRawValue();
+    // console.log({
+    //   ...raw,
+    // });
   }
 
   protected podeFiltrar(): boolean {

@@ -1,15 +1,75 @@
 :host {
   display: block;
-  padding: var(--spacing-md);
 }
 
 .passagens-page {
-  padding: var(--spacing-lg);
-  min-height: calc(100vh - 140px);
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
 }
 
-.passagens-page ds-card {
-  display: block;
+.passagens-page__header {
+  flex-shrink: 0;
+  padding: var(--spacing-md) var(--spacing-lg) 0;
+}
+
+.filters-card {
+  flex-shrink: 0;
+  margin: var(--spacing-sm) var(--spacing-lg) 0;
+}
+
+.table-area {
+  flex: 1;
+  min-height: 0;
+}
+
+.empty-state-area {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-sm);
+  text-align: center;
+  color: var(--color-text-secondary);
+}
+
+.empty-state__image {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: #f0f2f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--spacing-sm);
+
+  mat-icon {
+    font-size: 36px;
+    width: 36px;
+    height: 36px;
+    color: #94a3b8;
+  }
+}
+
+.empty-state__title {
+  font-weight: 600;
+  font-size: 16px;
+  color: #1e293b;
+}
+
+.empty-state__subtitle {
+  font-weight: 400;
+  font-size: 13px;
+  color: #64748b;
+  max-width: 320px;
 }
 
 .filters-row {
@@ -36,8 +96,12 @@
 }
 
 @media (max-width: 960px) {
-  .passagens-page {
-    padding: var(--spacing-md);
+  .passagens-page__header {
+    padding: var(--spacing-sm) var(--spacing-md) 0;
+  }
+
+  .filters-card {
+    margin: var(--spacing-sm) var(--spacing-md) 0;
   }
 
   .filters-row {
