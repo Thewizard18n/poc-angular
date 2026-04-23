@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, effect, input, ViewEncapsulation } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, ElementRef, inject, input, ViewEncapsulation } from '@angular/core';
 import { AgGridAngular } from 'ag-grid-angular';
 import {
   AllCommunityModule,
@@ -9,6 +9,7 @@ import {
   IDatasource,
   IGetRowsParams,
   ModuleRegistry,
+  RowClassRules,
 } from 'ag-grid-community';
 import { catchError, EMPTY, Observable } from 'rxjs';
 
@@ -19,6 +20,7 @@ import {
   PassagensDataColumnId,
   PassagensResponse,
 } from '../../features/passagens/passagens.models';
+import { ActionCellRenderer } from './action-cell';
 import { CheckboxCellRenderer } from './checkbox-cell';
 import { CheckboxHeaderRenderer } from './checkbox-header';
 
@@ -26,6 +28,7 @@ ModuleRegistry.registerModules([AllCommunityModule]);
 
 export interface TableGridContext {
   selectAllActive: boolean;
+  highlightedRowId: string | null;
 }
 
 function locationCellRenderer(params: ICellRendererParams<PassagemPosition>): string {
@@ -99,6 +102,8 @@ const COLUMN_DEF_REGISTRY: Record<string, ColDef<PassagemPosition>> = {
   encapsulation: ViewEncapsulation.None,
 })
 export class UiFilterTable {
+  private readonly el = inject(ElementRef);
+
   readonly columns = input.required<PassagensColumnConfig[]>();
   readonly fetchRows = input.required<(pagination: PaginationPayload) => Observable<PassagensResponse>>();
   readonly reloadToken = input(0);
@@ -107,7 +112,7 @@ export class UiFilterTable {
   protected readonly rowHeight = 56;
   protected readonly headerHeight = 44;
 
-  protected readonly gridContext: TableGridContext = { selectAllActive: false };
+  protected readonly gridContext: TableGridContext = { selectAllActive: false, highlightedRowId: null };
 
   protected readonly rowSelection = {
     mode: 'multiRow',
@@ -115,6 +120,10 @@ export class UiFilterTable {
     headerCheckbox: false,
     enableClickSelection: false,
   } as const;
+
+  protected readonly rowClassRules: RowClassRules<PassagemPosition> = {
+    'action-active-row': (params) => (params.context as TableGridContext).highlightedRowId === params.node.id,
+  };
 
   protected readonly defaultColDef: ColDef<PassagemPosition> = {
     sortable: true,
@@ -148,7 +157,20 @@ export class UiFilterTable {
       }
     }
 
-    return [checkboxCol, ...orderedDataColumns];
+    const actionCol: ColDef<PassagemPosition> = {
+      headerName: '',
+      width: 52,
+      maxWidth: 52,
+      minWidth: 52,
+      cellRenderer: ActionCellRenderer,
+      sortable: false,
+      resizable: false,
+      pinned: 'right',
+      lockPosition: true,
+      suppressHeaderMenuButton: true,
+    };
+
+    return [checkboxCol, ...orderedDataColumns, actionCol];
   });
 
   private gridApi?: GridApi<PassagemPosition>;
@@ -159,6 +181,8 @@ export class UiFilterTable {
       this.reloadToken();
       if (this.gridApi) {
         this.gridContext.selectAllActive = false;
+        this.gridContext.highlightedRowId = null;
+        this.el.nativeElement.querySelector('.table-grid')?.classList.remove('has-active-action');
         this.resetDatasource();
       }
     });

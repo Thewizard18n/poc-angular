@@ -54,6 +54,7 @@ export class CheckboxHeaderRenderer implements IHeaderAngularComp, OnDestroy {
   }
 
   onToggle(): void {
+    if (this.ctx.highlightedRowId !== null) return;
     const shouldSelect = !(this.allSelected || this.indeterminate);
     this.ctx.selectAllActive = shouldSelect;
 

@@ -39,6 +39,7 @@ export class CheckboxCellRenderer implements ICellRendererAngularComp {
   }
 
   onToggle(): void {
+    if (this.ctx.highlightedRowId !== null) return;
     const next = !this.params.node.isSelected();
     if (!next) {
       this.ctx.selectAllActive = false;

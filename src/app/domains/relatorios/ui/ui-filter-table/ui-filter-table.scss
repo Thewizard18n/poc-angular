@@ -29,7 +29,7 @@ app-ui-filter-table {
   --ag-header-height: 44px;
   --ag-row-height: 56px;
   --ag-odd-row-background-color: #fff;
-  --ag-selected-row-background-color: #f0f7ff;
+  --ag-selected-row-background-color: transparent;
   --ag-range-selection-background-color: transparent;
   --ag-cell-horizontal-padding: 12px;
   --ag-header-column-separator-display: none;
@@ -82,7 +82,24 @@ app-ui-filter-table {
   }
 
   .ag-row-selected::before {
-    background-color: #f0f7ff;
+    background-color: transparent;
+  }
+
+  .ag-row.action-active-row {
+    --ag-selected-row-background-color: #dbeafe;
+    background-color: #dbeafe;
+  }
+
+  &.has-active-action {
+    .ag-header .mat-mdc-checkbox,
+    .ag-row:not(.action-active-row) .mat-mdc-checkbox {
+      opacity: 0.35;
+      pointer-events: none;
+    }
+
+    .action-active-row .mat-mdc-checkbox {
+      pointer-events: none;
+    }
   }
 
   .ag-cell-value {
