@@ -51,14 +51,17 @@ export class ActionCellRenderer implements ICellRendererAngularComp {
     const nodeId = this.params.node.id;
     const gridEl = this.params.eGridCell.closest('.table-grid');
 
+    if (ctx.highlightedRowId !== null) {
+      const prevNode = this.params.api.getRowNode(ctx.highlightedRowId);
+      prevNode?.setSelected(false);
+    }
+
     if (ctx.highlightedRowId === nodeId) {
       ctx.highlightedRowId = null;
       gridEl?.classList.remove('has-active-action');
     } else {
       ctx.highlightedRowId = nodeId ?? null;
-      if (!this.params.node.isSelected()) {
-        this.params.node.setSelected(true);
-      }
+      this.params.node.setSelected(true);
       gridEl?.classList.add('has-active-action');
     }
 
