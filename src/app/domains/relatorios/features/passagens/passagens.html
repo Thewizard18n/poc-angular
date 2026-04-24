@@ -49,14 +49,7 @@
 
   <app-ui-mapa />
 
-  @if (mostrarAcoesPosFiltro()) {
-    <app-ui-filter-table
-      class="table-area"
-      [columns]="colunas()"
-      [fetchRows]="fetchRows"
-      [reloadToken]="gridReloadToken()"
-    />
-  } @else {
+  @if (!mostrarAcoesPosFiltro()) {
     <div class="empty-state-area">
       <div class="empty-state">
         <div class="empty-state__image">
@@ -66,5 +59,30 @@
         <p class="empty-state__subtitle">Selecione os filtros acima e clique em Filtrar para visualizar os dados.</p>
       </div>
     </div>
+  } @else {
+    @if (carregando()) {
+      <div class="empty-state-area">
+        <mat-spinner diameter="48" />
+      </div>
+    } @else if (resultadoVazio()) {
+      <div class="empty-state-area">
+        <div class="empty-state">
+          <div class="empty-state__image">
+            <mat-icon>search_off</mat-icon>
+          </div>
+          <h2 class="empty-state__title">Nenhum resultado encontrado</h2>
+          <p class="empty-state__subtitle">Não foram encontrados dados para os filtros selecionados. Tente ajustar os filtros.</p>
+        </div>
+      </div>
+    }
+
+    <app-ui-filter-table
+      class="table-area"
+      [class.table-area--hidden]="carregando() || resultadoVazio()"
+      [columns]="colunas()"
+      [fetchRows]="fetchRows"
+      [reloadToken]="gridReloadToken()"
+      (emptyResult)="onResultado($event)"
+    />
   }
 </section>

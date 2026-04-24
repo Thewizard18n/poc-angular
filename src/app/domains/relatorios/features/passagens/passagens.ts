@@ -3,6 +3,7 @@ import { FormBuilder, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { Observable, of } from 'rxjs';
 
@@ -34,6 +35,7 @@ import { PassagensUsecase } from './passagens-usecase';
     MatButtonModule,
     MatIconModule,
     MatMenuModule,
+    MatProgressSpinnerModule,
     MatSlideToggleModule,
     PeriodoFilter,
     UiFilterTable,
@@ -56,6 +58,8 @@ export class Passagens {
   });
 
   protected readonly mostrarAcoesPosFiltro = signal(false);
+  protected readonly carregando = signal(false);
+  protected readonly resultadoVazio = signal(false);
   protected readonly gridReloadToken = signal(0);
 
   protected readonly colunas = signal<PassagensColumnConfig[]>([
@@ -106,12 +110,19 @@ export class Passagens {
     }
 
     this.mostrarAcoesPosFiltro.set(true);
+    this.carregando.set(true);
+    this.resultadoVazio.set(false);
     this.gridReloadToken.update((value) => value + 1);
 
     // const raw = this.filtersForm.getRawValue();
     // console.log({
     //   ...raw,
     // });
+  }
+
+  protected onResultado(vazio: boolean): void {
+    this.carregando.set(false);
+    this.resultadoVazio.set(vazio);
   }
 
   protected podeFiltrar(): boolean {

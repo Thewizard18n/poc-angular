@@ -1,3 +1,4 @@
+@use '@angular/material' as mat;
 @import 'ag-grid-community/styles/ag-grid.css';
 @import 'ag-grid-community/styles/ag-theme-quartz.css';
 
@@ -39,15 +40,24 @@ app-ui-filter-table {
   --ag-icon-size: 14px;
   --ag-grid-size: 6px;
 
-  --mdc-checkbox-selected-checkmark-color: #fff;
-  --mdc-checkbox-selected-focus-icon-color: #3b82f6;
-  --mdc-checkbox-selected-hover-icon-color: #2563eb;
-  --mdc-checkbox-selected-icon-color: #3b82f6;
-  --mdc-checkbox-selected-pressed-icon-color: #3b82f6;
-  --mdc-checkbox-unselected-icon-color: #94a3b8;
-  --mdc-checkbox-unselected-focus-icon-color: #94a3b8;
-  --mdc-checkbox-unselected-hover-icon-color: #64748b;
-  --mdc-checkbox-state-layer-size: 32px;
+  @include mat.checkbox-overrides((
+    selected-checkmark-color: #fff,
+    selected-icon-color: #3b82f6,
+    selected-focus-icon-color: #3b82f6,
+    selected-hover-icon-color: #2563eb,
+    selected-pressed-icon-color: #3b82f6,
+    unselected-icon-color: #94a3b8,
+    unselected-focus-icon-color: #94a3b8,
+    unselected-hover-icon-color: #64748b,
+    touch-target-display: none,
+    state-layer-size: 18px,
+    selected-focus-state-layer-opacity: 0,
+    selected-hover-state-layer-opacity: 0,
+    selected-pressed-state-layer-opacity: 0,
+    unselected-focus-state-layer-opacity: 0,
+    unselected-hover-state-layer-opacity: 0,
+    unselected-pressed-state-layer-opacity: 0,
+  ));
 
   .ag-header {
     border-bottom: 2px solid #d1d5db;
@@ -133,29 +143,6 @@ app-ui-filter-table {
     width: 100%;
   }
 
-  .mdc-checkbox {
-    padding: 0;
-    margin: 0;
-  }
-
-  .mat-mdc-checkbox .mdc-checkbox {
-    flex: 0 0 18px;
-    width: 18px;
-    height: 18px;
-  }
-
-  .mat-mdc-checkbox .mdc-checkbox__background {
-    width: 18px;
-    height: 18px;
-    top: 0;
-    left: 0;
-  }
-
-  .mat-mdc-checkbox-touch-target,
-  .mdc-checkbox__ripple,
-  .mat-mdc-checkbox-ripple {
-    display: none;
-  }
 }
 
 .location-cell {

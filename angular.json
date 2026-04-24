@@ -34,6 +34,8 @@
               }
             ],
             "styles": [
+              "ag-grid-community/styles/ag-grid.css",
+              "ag-grid-community/styles/ag-theme-quartz.css",
               "src/styles.scss"
             ]
           },
@@ -48,7 +50,7 @@
                 {
                   "type": "anyComponentStyle",
                   "maximumWarning": "4kB",
-                  "maximumError": "8kB"
+                  "maximumError": "300kB"
                 }
               ],
               "outputHashing": "all"

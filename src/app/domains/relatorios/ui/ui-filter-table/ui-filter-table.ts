@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, effect, ElementRef, inject, input, ViewEncapsulation } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, ElementRef, inject, input, output, ViewEncapsulation } from '@angular/core';
 import { AgGridAngular } from 'ag-grid-angular';
 import {
   AllCommunityModule,
@@ -107,6 +107,7 @@ export class UiFilterTable {
   readonly columns = input.required<PassagensColumnConfig[]>();
   readonly fetchRows = input.required<(pagination: PaginationPayload) => Observable<PassagensResponse>>();
   readonly reloadToken = input(0);
+  readonly emptyResult = output<boolean>();
 
   protected readonly cacheBlockSize = 100;
   protected readonly rowHeight = 56;
@@ -219,6 +220,10 @@ export class UiFilterTable {
           .subscribe((response) => {
             this.maxCreatedAt = response.maxCreatedAt;
             params.successCallback(response.Positions, response.totalCount);
+
+            if (params.startRow === 0) {
+              this.emptyResult.emit(response.totalCount === 0);
+            }
 
             if (this.gridContext.selectAllActive) {
               this.gridApi?.forEachNode((node) => {
