@@ -1,3 +1,4 @@
+import { NgOptimizedImage } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -33,6 +34,7 @@ import { PassagensUsecase } from './passagens-usecase';
     DsCard,
     HorarioFilter,
     MatButtonModule,
+    NgOptimizedImage,
     MatIconModule,
     MatMenuModule,
     MatProgressSpinnerModule,
@@ -57,9 +59,7 @@ export class Passagens {
     timeTo: this.formBuilder.control('00:00'),
   });
 
-  protected readonly mostrarAcoesPosFiltro = signal(false);
-  protected readonly carregando = signal(false);
-  protected readonly resultadoVazio = signal(false);
+  protected readonly viewState = signal<'idle' | 'loading' | 'empty' | 'data'>('idle');
   protected readonly gridReloadToken = signal(0);
 
   protected readonly colunas = signal<PassagensColumnConfig[]>([
@@ -109,20 +109,12 @@ export class Passagens {
       return;
     }
 
-    this.mostrarAcoesPosFiltro.set(true);
-    this.carregando.set(true);
-    this.resultadoVazio.set(false);
+    this.viewState.set('loading');
     this.gridReloadToken.update((value) => value + 1);
-
-    // const raw = this.filtersForm.getRawValue();
-    // console.log({
-    //   ...raw,
-    // });
   }
 
   protected onResultado(vazio: boolean): void {
-    this.carregando.set(false);
-    this.resultadoVazio.set(vazio);
+    this.viewState.set(vazio ? 'empty' : 'data');
   }
 
   protected podeFiltrar(): boolean {

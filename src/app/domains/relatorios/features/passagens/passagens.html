@@ -23,7 +23,7 @@
           mat-stroked-button
           type="button"
           [matMenuTriggerFor]="downloadMenu"
-          [disabled]="!mostrarAcoesPosFiltro()"
+          [disabled]="viewState() === 'idle'"
         >
           Download
         </button>
@@ -35,7 +35,7 @@
         />
 
         <mat-slide-toggle
-          [disabled]="!mostrarAcoesPosFiltro()"
+          [disabled]="viewState() === 'idle'"
           aria-label="Habilitar modo de download"
         />
       </div>
@@ -49,36 +49,45 @@
 
   <app-ui-mapa />
 
-  @if (!mostrarAcoesPosFiltro()) {
-    <div class="empty-state-area">
-      <div class="empty-state">
-        <div class="empty-state__image">
-          <mat-icon>search</mat-icon>
-        </div>
-        <h2 class="empty-state__title">Nenhum dado para exibir</h2>
-        <p class="empty-state__subtitle">Selecione os filtros acima e clique em Filtrar para visualizar os dados.</p>
-      </div>
-    </div>
-  } @else {
-    @if (carregando()) {
-      <div class="empty-state-area">
-        <mat-spinner diameter="48" />
-      </div>
-    } @else if (resultadoVazio()) {
+  @switch (viewState()) {
+    @case ('idle') {
       <div class="empty-state-area">
         <div class="empty-state">
           <div class="empty-state__image">
-            <mat-icon>search_off</mat-icon>
+            <mat-icon>search</mat-icon>
+          </div>
+          <h2 class="empty-state__title">Nenhum dado para exibir</h2>
+          <p class="empty-state__subtitle">Selecione os filtros acima e clique em Filtrar para visualizar os dados.</p>
+        </div>
+      </div>
+    }
+    @case ('loading') {
+      <div class="empty-state-area">
+        <mat-spinner diameter="48" />
+      </div>
+    }
+    @case ('empty') {
+      <div class="empty-state-area">
+        <div class="empty-state">
+          <div class="empty-state__image">
+            <img
+              ngSrc="/images/passagens-empty-no-results.svg"
+              width="36"
+              height="36"
+              alt=""
+            />
           </div>
           <h2 class="empty-state__title">Nenhum resultado encontrado</h2>
           <p class="empty-state__subtitle">Não foram encontrados dados para os filtros selecionados. Tente ajustar os filtros.</p>
         </div>
       </div>
     }
+  }
 
+  @if (viewState() !== 'idle') {
     <app-ui-filter-table
       class="table-area"
-      [class.table-area--hidden]="carregando() || resultadoVazio()"
+      [class.table-area--hidden]="viewState() !== 'data'"
       [columns]="colunas()"
       [fetchRows]="fetchRows"
       [reloadToken]="gridReloadToken()"

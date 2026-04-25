@@ -66,6 +66,12 @@
     height: 36px;
     color: #94a3b8;
   }
+
+  img {
+    width: 36px;
+    height: 36px;
+    object-fit: contain;
+  }
 }
 
 .empty-state__title {
