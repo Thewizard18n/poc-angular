@@ -2,7 +2,9 @@ import { ChangeDetectionStrategy, Component, computed, effect, ElementRef, injec
 import { AgGridAngular } from 'ag-grid-angular';
 import {
   AllCommunityModule,
+  ColumnMovedEvent,
   ColDef,
+  ColGroupDef,
   GridApi,
   GridReadyEvent,
   ICellRendererParams,
@@ -13,6 +15,7 @@ import {
 } from 'ag-grid-community';
 import { catchError, EMPTY, map, Observable, switchMap } from 'rxjs';
 
+import { FIXED_POSITION_DATETIME_COLUMN_KEY } from '../../features/passagens/passagens-columns.config';
 import {
   AddressLookupRequestPayload,
   AddressLookupResponse,
@@ -63,36 +66,43 @@ function locationCellRenderer(params: ICellRendererParams<PassagemPosition>): st
 }
 
 const COLUMN_DEF_REGISTRY: Record<string, ColDef<PassagemPosition>> = {
-  vehicleDisplay: { field: 'vehicleDisplay', headerName: 'Veiculo', width: 120 },
-  positionDatetime: { field: 'positionDatetime', headerName: 'Date & Time', width: 150, sort: 'desc' },
-  positionReceivedAt: { field: 'positionReceivedAt', headerName: 'Data posicao recebida', width: 160 },
-  driverName: { field: 'driverName', headerName: 'Motorista', width: 130 },
-  speed: { field: 'speed', headerName: 'Speed', width: 90 },
-  ignition: { field: 'ignition', headerName: 'Ignition', width: 100 },
-  blocking: { field: 'blocking', headerName: 'Bloqueio', width: 100 },
-  battery: { field: 'battery', headerName: 'Bateria', width: 90 },
+  vehicleDisplay: { field: 'vehicleDisplay', width: 120 },
+  positionDatetime: {
+    field: 'positionDatetime',
+    width: 150,
+    sortable: true,
+    sort: 'desc',
+    sortingOrder: ['desc', 'asc'],
+    suppressMovable: true,
+    lockPosition: 'left',
+  },
+  positionReceivedAt: { field: 'positionReceivedAt', width: 160 },
+  driverName: { field: 'driverName', width: 130 },
+  speed: { field: 'speed', width: 90 },
+  ignition: { field: 'ignition', width: 100 },
+  blocking: { field: 'blocking', width: 100 },
+  battery: { field: 'battery', width: 90 },
   location: {
     field: 'location',
-    headerName: 'Location',
     width: 280,
     cellRenderer: locationCellRenderer,
     autoHeight: false,
   },
-  hourmeter: { field: 'hourmeter', headerName: 'Hour meter', width: 120 },
-  latitudeLongitude: { field: 'latitudeLongitude', headerName: 'Latitude / Longitude', width: 200 },
-  satellite: { field: 'satellite', headerName: 'Satellite', width: 90 },
-  memory: { field: 'memory', headerName: 'Memory', width: 90 },
-  gps: { field: 'gps', headerName: 'GPS', width: 70 },
-  temperature1: { field: 'temperature1', headerName: 'Temperatura 1', width: 120 },
-  temperature2: { field: 'temperature2', headerName: 'Temperatura 2', width: 120 },
-  temperature3: { field: 'temperature3', headerName: 'Temperatura 3', width: 120 },
-  odometer: { field: 'odometer', headerName: 'Hodometro', width: 110 },
-  digitalTemperature1: { field: 'digitalTemperature1', headerName: 'Temperatura digital 1', width: 160 },
-  digitalTemperature2: { field: 'digitalTemperature2', headerName: 'Temperatura digital 2', width: 160 },
-  digitalTemperature3: { field: 'digitalTemperature3', headerName: 'Temperatura digital 3', width: 160 },
-  digitalUnit1: { field: 'digitalUnit1', headerName: 'Unidade digital 1', width: 150 },
-  digitalUnit2: { field: 'digitalUnit2', headerName: 'Unidade digital 2', width: 150 },
-  digitalUnit3: { field: 'digitalUnit3', headerName: 'Unidade digital 3', width: 150 },
+  hourmeter: { field: 'hourmeter', width: 120 },
+  latitudeLongitude: { field: 'latitudeLongitude', width: 200 },
+  satellite: { field: 'satellite', width: 90 },
+  memory: { field: 'memory', width: 90 },
+  gps: { field: 'gps', width: 70 },
+  temperature1: { field: 'temperature1', width: 120 },
+  temperature2: { field: 'temperature2', width: 120 },
+  temperature3: { field: 'temperature3', width: 120 },
+  odometer: { field: 'odometer', width: 110 },
+  digitalTemperature1: { field: 'digitalTemperature1', width: 160 },
+  digitalTemperature2: { field: 'digitalTemperature2', width: 160 },
+  digitalTemperature3: { field: 'digitalTemperature3', width: 160 },
+  digitalUnit1: { field: 'digitalUnit1', width: 150 },
+  digitalUnit2: { field: 'digitalUnit2', width: 150 },
+  digitalUnit3: { field: 'digitalUnit3', width: 150 },
 };
 
 @Component({
@@ -113,6 +123,7 @@ export class UiFilterTable {
   >();
   readonly reloadToken = input(0);
   readonly emptyResult = output<boolean>();
+  readonly columnsOrderChange = output<PassagensDataColumnId[]>();
 
   protected readonly cacheBlockSize = 100;
   protected readonly rowHeight = 56;
@@ -132,16 +143,18 @@ export class UiFilterTable {
   };
 
   protected readonly defaultColDef: ColDef<PassagemPosition> = {
-    sortable: true,
+    sortable: false,
     resizable: true,
     minWidth: 100,
-    suppressMovable: true,
+    suppressMovable: false,
+    lockPinned: true,
   };
 
   protected datasource: IDatasource = this.createDatasource();
 
   protected readonly columnDefs = computed<ColDef<PassagemPosition>[]>(() => {
     const checkboxCol: ColDef<PassagemPosition> = {
+      colId: '__checkbox',
       headerName: '',
       width: 52,
       maxWidth: 52,
@@ -152,18 +165,26 @@ export class UiFilterTable {
       resizable: false,
       pinned: 'left',
       lockPosition: true,
+      suppressMovable: true,
+      lockPinned: true,
       suppressHeaderMenuButton: true,
     };
 
     const orderedDataColumns: ColDef<PassagemPosition>[] = [];
     for (const config of this.columns()) {
-      const baseDef = COLUMN_DEF_REGISTRY[config.id];
+      const baseDef = COLUMN_DEF_REGISTRY[config.key];
       if (baseDef) {
-        orderedDataColumns.push({ ...baseDef, hide: !config.visible });
+        orderedDataColumns.push({
+          ...baseDef,
+          colId: config.key,
+          headerName: config.label,
+          hide: !config.visibility,
+        });
       }
     }
 
     const actionCol: ColDef<PassagemPosition> = {
+      colId: '__action',
       headerName: '',
       width: 52,
       maxWidth: 52,
@@ -173,6 +194,8 @@ export class UiFilterTable {
       resizable: false,
       pinned: 'right',
       lockPosition: true,
+      suppressMovable: true,
+      lockPinned: true,
       suppressHeaderMenuButton: true,
     };
 
@@ -228,7 +251,6 @@ export class UiFilterTable {
           )
           .subscribe((response) => {
             this.maxCreatedAt = response.maxCreatedAt;
-            console.log('response', response);
             params.successCallback(response.Positions, response.totalCount);
 
             if (params.startRow === 0) {
@@ -254,16 +276,59 @@ export class UiFilterTable {
     this.gridApi?.setGridOption('datasource', this.datasource);
   }
 
+  onColumnMoved(event: ColumnMovedEvent<PassagemPosition>): void {
+    if (event.finished !== true) {
+      return;
+    }
+
+    const columnOrder = this.readCurrentDataColumnOrder();
+    if (!columnOrder.length) {
+      return;
+    }
+
+    this.columnsOrderChange.emit(this.ensureFixedDatetimeFirst(columnOrder));
+  }
+
   private toColumnId(columnId?: string): PassagensDataColumnId {
     const fallback: PassagensDataColumnId = 'positionDatetime';
     if (!columnId) {
       return fallback;
     }
 
-    const validIds = new Set(this.columns().map((column) => column.id));
+    const validIds = new Set(this.columns().map((column) => column.key));
     return validIds.has(columnId as PassagensDataColumnId)
       ? (columnId as PassagensDataColumnId)
       : fallback;
+  }
+
+  private readCurrentDataColumnOrder(): PassagensDataColumnId[] {
+    const columnDefs = this.gridApi?.getColumnDefs() ?? [];
+    return columnDefs
+      .map((columnDef) => this.extractColId(columnDef))
+      .filter((colId): colId is PassagensDataColumnId => this.isDataColumnId(colId));
+  }
+
+  private extractColId(columnDef: ColDef<PassagemPosition> | ColGroupDef<PassagemPosition>): string | undefined {
+    if ('colId' in columnDef && columnDef.colId) {
+      return columnDef.colId;
+    }
+    if ('field' in columnDef && typeof columnDef.field === 'string') {
+      return columnDef.field;
+    }
+    return undefined;
+  }
+
+  private isDataColumnId(colId: string | undefined): colId is PassagensDataColumnId {
+    if (!colId) {
+      return false;
+    }
+    return this.columns().some((column) => column.key === colId);
+  }
+
+  private ensureFixedDatetimeFirst(order: PassagensDataColumnId[]): PassagensDataColumnId[] {
+    const fixedKey = FIXED_POSITION_DATETIME_COLUMN_KEY;
+    const remaining = order.filter((columnKey) => columnKey !== fixedKey);
+    return [fixedKey, ...remaining];
   }
 
   private toAddressLookupPayload(positions: PassagemPosition[]): AddressLookupRequestPayload {

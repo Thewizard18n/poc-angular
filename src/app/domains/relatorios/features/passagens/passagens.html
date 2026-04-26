@@ -30,8 +30,8 @@
 
         <app-colunas-filter
           [colunas]="colunas()"
+          [fixedColumnKey]="fixedColumnKey"
           (colunaToggle)="toggleColuna($event)"
-          (colunasReorder)="onReorderColunas($event)"
         />
 
         <mat-slide-toggle
@@ -94,6 +94,7 @@
       [fetchAddressByLocations]="fetchAddressByLocations"
       [reloadToken]="gridReloadToken()"
       (emptyResult)="onResultado($event)"
+      (columnsOrderChange)="onGridColumnsOrderChange($event)"
     />
   }
 </section>

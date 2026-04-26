@@ -113,7 +113,7 @@ export interface AddressLookupResponse {
 }
 
 export interface PassagensColumnConfig {
-  id: PassagensDataColumnId;
+  key: PassagensDataColumnId;
   label: string;
-  visible: boolean;
+  visibility: boolean;
 }

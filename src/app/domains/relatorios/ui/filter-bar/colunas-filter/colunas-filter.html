@@ -14,21 +14,18 @@
       />
     </mat-form-field>
 
-    <div class="colunas-items-list" cdkDropList (cdkDropListDropped)="onDrop($event)">
-      @for (coluna of colunas(); track coluna.id) {
-        <div class="column-item" cdkDrag>
+    <div class="colunas-items-list">
+      @for (coluna of visibleSortedColunas(); track coluna.key) {
+        <div class="column-item">
           <mat-checkbox
             class="column-checkbox"
             color="primary"
-            [checked]="coluna.visible"
+            [checked]="coluna.visibility"
             (click)="$event.stopPropagation()"
-            (change)="colunaToggle.emit(coluna.id)"
+            (change)="colunaToggle.emit(coluna.key)"
           >
             {{ coluna.label }}
           </mat-checkbox>
-          <button mat-icon-button type="button" cdkDragHandle aria-label="Reordenar coluna">
-            <mat-icon>drag_indicator</mat-icon>
-          </button>
         </div>
       }
     </div>

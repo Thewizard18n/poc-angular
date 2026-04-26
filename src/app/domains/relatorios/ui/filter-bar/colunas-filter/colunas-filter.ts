@@ -1,5 +1,4 @@
-import { CdkDragDrop, DragDropModule } from '@angular/cdk/drag-drop';
-import { Component, input, output } from '@angular/core';
+import { Component, computed, input, output } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -12,7 +11,6 @@ import { PassagensColumnConfig, PassagensDataColumnId } from '../../../features/
 @Component({
   selector: 'app-colunas-filter',
   imports: [
-    DragDropModule,
     MatButtonModule,
     MatCheckboxModule,
     MatFormFieldModule,
@@ -25,22 +23,27 @@ import { PassagensColumnConfig, PassagensDataColumnId } from '../../../features/
 })
 export class ColunasFilter {
   readonly colunas = input.required<PassagensColumnConfig[]>();
-
+  readonly fixedColumnKey = input.required<PassagensDataColumnId>();
   readonly colunaToggle = output<PassagensDataColumnId>();
-  readonly colunasReorder = output<{ previousIndex: number; currentIndex: number }>();
+  private readonly languageStorageKey = 'language';
+  private readonly fallbackLanguage = 'pt-BR';
 
-  onDrop(event: CdkDragDrop<PassagensColumnConfig[]>): void {
-    this.colunasReorder.emit({
-      previousIndex: event.previousIndex,
-      currentIndex: event.currentIndex,
-    });
-  }
+  protected readonly visibleSortedColunas = computed(() => {
+    const collator = new Intl.Collator(this.getSelectedLanguage(), { sensitivity: 'base' });
+    return [...this.colunas()]
+      .filter((coluna) => coluna.key !== this.fixedColumnKey())
+      .sort((left, right) => collator.compare(left.label, right.label));
+  });
 
   getColunasSelecionadasLabel(): string {
-    const selecionadas = this.colunas()
-      .filter((coluna) => coluna.visible)
+    const selecionadas = this.visibleSortedColunas()
+      .filter((coluna) => coluna.visibility)
       .map((coluna) => coluna.label);
 
     return selecionadas.join(', ');
+  }
+
+  private getSelectedLanguage(): string {
+    return sessionStorage.getItem(this.languageStorageKey) ?? this.fallbackLanguage;
   }
 }

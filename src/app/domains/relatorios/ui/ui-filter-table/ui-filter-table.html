@@ -11,7 +11,9 @@
   [datasource]="datasource"
   [context]="gridContext"
   [rowClassRules]="rowClassRules"
+  [suppressDragLeaveHidesColumns]="true"
   [suppressCellFocus]="true"
   [overlayNoRowsTemplate]="'Nenhum dado filtrado'"
+  (columnMoved)="onColumnMoved($event)"
   (gridReady)="onGridReady($event)"
 />

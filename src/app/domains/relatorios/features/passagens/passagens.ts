@@ -6,6 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { TranslateService } from '@ngx-translate/core';
 import { Observable, of } from 'rxjs';
 
 import { DsCard } from '../../../../design-system/ui-primitives/card/ds-card';
@@ -16,6 +17,11 @@ import { PeriodoFilter } from '../../ui/filter-bar/periodo-filter/periodo-filter
 import { VeiculoFilter } from '../../ui/filter-bar/veiculo-filter/veiculo-filter';
 import { UiFilterTable } from '../../ui/ui-filter-table/ui-filter-table';
 import { UiMapa } from '../../ui/ui-mapa/ui-mapa';
+import {
+  FIXED_POSITION_DATETIME_COLUMN_KEY,
+  PASSAGENS_COLUMNS_CONFIG,
+  PassagensColumnConfigEntry,
+} from './passagens-columns.config';
 import {
   AddressLookupRequestPayload,
   AddressLookupResponse,
@@ -52,6 +58,9 @@ import { PassagensUsecase } from './passagens-usecase';
 export class Passagens {
   protected readonly usecase = inject(PassagensUsecase);
   private readonly formBuilder = inject(FormBuilder);
+  private readonly translate = inject(TranslateService);
+  private readonly languageStorageKey = 'language';
+  private readonly fallbackLanguage = 'pt-BR';
 
   protected readonly filtersForm = this.formBuilder.group({
     vehiclesIds: this.formBuilder.control<string[]>([], { validators: [Validators.required] }),
@@ -63,33 +72,8 @@ export class Passagens {
 
   protected readonly viewState = signal<'idle' | 'loading' | 'empty' | 'data'>('idle');
   protected readonly gridReloadToken = signal(0);
-
-  protected readonly colunas = signal<PassagensColumnConfig[]>([
-    { id: 'vehicleDisplay', label: 'Veiculo', visible: true },
-    { id: 'positionDatetime', label: 'Data/Hora', visible: true },
-    { id: 'positionReceivedAt', label: 'Data posicao recebida', visible: true },
-    { id: 'driverName', label: 'Motorista', visible: true },
-    { id: 'speed', label: 'Velocidade', visible: true },
-    { id: 'ignition', label: 'Ignicao', visible: true },
-    { id: 'blocking', label: 'Bloqueio', visible: true },
-    { id: 'battery', label: 'Bateria', visible: true },
-    { id: 'memory', label: 'Memoria', visible: true },
-    { id: 'gps', label: 'GPS', visible: true },
-    { id: 'satellite', label: 'Satelite', visible: true },
-    { id: 'latitudeLongitude', label: 'Latitude / Longitude', visible: true },
-    { id: 'location', label: 'Localizacao', visible: true },
-    { id: 'temperature1', label: 'Temperatura 1', visible: true },
-    { id: 'temperature2', label: 'Temperatura 2', visible: true },
-    { id: 'temperature3', label: 'Temperatura 3', visible: true },
-    { id: 'odometer', label: 'Hodometro', visible: true },
-    { id: 'hourmeter', label: 'Horimetro', visible: true },
-    { id: 'digitalTemperature1', label: 'Temperatura digital 1', visible: true },
-    { id: 'digitalTemperature2', label: 'Temperatura digital 2', visible: true },
-    { id: 'digitalTemperature3', label: 'Temperatura digital 3', visible: true },
-    { id: 'digitalUnit1', label: 'Unidade digital 1', visible: true },
-    { id: 'digitalUnit2', label: 'Unidade digital 2', visible: true },
-    { id: 'digitalUnit3', label: 'Unidade digital 3', visible: true },
-  ]);
+  protected readonly fixedColumnKey = FIXED_POSITION_DATETIME_COLUMN_KEY;
+  protected readonly colunas = signal<PassagensColumnConfig[]>(this.buildInitialColumns());
 
   protected onVeiculoApply(event: { id: number } | null): void {
     this.filtersForm.controls.vehiclesIds.setValue(event ? [event.id.toString()] : []);
@@ -125,7 +109,9 @@ export class Passagens {
 
   protected toggleColuna(colunaId: PassagensDataColumnId): void {
     this.colunas.update((current) =>
-      current.map((coluna) => (coluna.id === colunaId ? { ...coluna, visible: !coluna.visible } : coluna)),
+      current.map((coluna) =>
+        coluna.key === colunaId ? { ...coluna, visibility: !coluna.visibility } : coluna,
+      ),
     );
   }
 
@@ -137,8 +123,22 @@ export class Passagens {
     this.colunas.update((current) => {
       const reordered = [...current];
       const [moved] = reordered.splice(event.previousIndex, 1);
+      if (!moved || moved.key === this.fixedColumnKey) {
+        return current;
+      }
       reordered.splice(event.currentIndex, 0, moved);
-      return reordered;
+      return this.withFixedColumnFirst(reordered);
+    });
+  }
+
+  protected onGridColumnsOrderChange(order: PassagensDataColumnId[]): void {
+    this.colunas.update((current) => {
+      const byKey = new Map(current.map((column) => [column.key, column]));
+      const reordered = order
+        .map((key) => byKey.get(key))
+        .filter((column): column is PassagensColumnConfig => Boolean(column));
+      const missing = current.filter((column) => !order.includes(column.key));
+      return this.withFixedColumnFirst([...reordered, ...missing]);
     });
   }
 
@@ -170,4 +170,28 @@ export class Passagens {
     return this.usecase.getAddressByLocations(payload);
   };
 
+  private buildInitialColumns(): PassagensColumnConfig[] {
+    const locale = this.getSelectedLanguage();
+    const collator = new Intl.Collator(locale, { sensitivity: 'base' });
+    const baseColumns = [...PASSAGENS_COLUMNS_CONFIG].map((column) => ({
+      ...column,
+      label: this.translate.instant(column.label),
+    }));
+    const fixedColumn = baseColumns.find((column) => column.key === this.fixedColumnKey);
+    const sortableColumns = baseColumns
+      .filter((column) => column.key !== this.fixedColumnKey)
+      .sort((left, right) => collator.compare(left.label, right.label));
+
+    return fixedColumn ? [fixedColumn, ...sortableColumns] : sortableColumns;
+  }
+
+  private getSelectedLanguage(): string {
+    return sessionStorage.getItem(this.languageStorageKey) ?? this.translate.currentLang ?? this.fallbackLanguage;
+  }
+
+  private withFixedColumnFirst(columns: PassagensColumnConfigEntry[]): PassagensColumnConfig[] {
+    const fixedColumn = columns.find((column) => column.key === this.fixedColumnKey);
+    const remaining = columns.filter((column) => column.key !== this.fixedColumnKey);
+    return fixedColumn ? [fixedColumn, ...remaining] : remaining;
+  }
 }
