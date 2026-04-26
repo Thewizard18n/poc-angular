@@ -62,7 +62,15 @@ export interface PassagemPosition {
   gps: string;
   satellite: string;
   latitudeLongitude: string;
+  latitude: string;
+  longitude: string;
   location: string;
+  adress?: {
+    type: string;
+    street: string;
+    number: string;
+    bairro: string;
+  };
   temperature1: string;
   temperature2: string;
   temperature3: string;
@@ -80,6 +88,28 @@ export interface PassagensResponse {
   totalCount: number;
   maxCreatedAt: number;
   Positions: PassagemPosition[];
+}
+
+export interface AddressLookupLocationInput {
+  id: string;
+  index: number;
+  latitude: string;
+  longitude: string;
+}
+
+export interface AddressLookupRequestPayload {
+  LocationList: AddressLookupLocationInput[];
+}
+
+export interface AddressLookupLocationResult {
+  street: string;
+  number: string;
+  bairro: string;
+}
+
+export interface AddressLookupResponse {
+  Type: string;
+  LocationList: AddressLookupLocationResult[];
 }
 
 export interface PassagensColumnConfig {

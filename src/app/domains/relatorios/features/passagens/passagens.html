@@ -57,7 +57,8 @@
             <mat-icon>search</mat-icon>
           </div>
           <h2 class="empty-state__title">Nenhum dado para exibir</h2>
-          <p class="empty-state__subtitle">Selecione os filtros acima e clique em Filtrar para visualizar os dados.</p>
+          <span class="empty-state__subtitle">Selecione os filtros acima e clique em Filtrar</span>
+          <span class="empty-state__subtitle">para visualizar os dados.</span>
         </div>
       </div>
     }
@@ -90,6 +91,7 @@
       [class.table-area--hidden]="viewState() !== 'data'"
       [columns]="colunas()"
       [fetchRows]="fetchRows"
+      [fetchAddressByLocations]="fetchAddressByLocations"
       [reloadToken]="gridReloadToken()"
       (emptyResult)="onResultado($event)"
     />

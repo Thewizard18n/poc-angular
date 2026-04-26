@@ -17,6 +17,8 @@ import { VeiculoFilter } from '../../ui/filter-bar/veiculo-filter/veiculo-filter
 import { UiFilterTable } from '../../ui/ui-filter-table/ui-filter-table';
 import { UiMapa } from '../../ui/ui-mapa/ui-mapa';
 import {
+  AddressLookupRequestPayload,
+  AddressLookupResponse,
   PaginationPayload,
   PassagensColumnConfig,
   PassagensDataColumnId,
@@ -162,6 +164,10 @@ export class Passagens {
       pagination,
     };
     return this.usecase.getPassagens(payload);
+  };
+
+  protected fetchAddressByLocations = (payload: AddressLookupRequestPayload): Observable<AddressLookupResponse> => {
+    return this.usecase.getAddressByLocations(payload);
   };
 
 }

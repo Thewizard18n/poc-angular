@@ -11,9 +11,11 @@ import {
   ModuleRegistry,
   RowClassRules,
 } from 'ag-grid-community';
-import { catchError, EMPTY, Observable } from 'rxjs';
+import { catchError, EMPTY, map, Observable, switchMap } from 'rxjs';
 
 import {
+  AddressLookupRequestPayload,
+  AddressLookupResponse,
   PaginationPayload,
   PassagemPosition,
   PassagensColumnConfig,
@@ -106,6 +108,9 @@ export class UiFilterTable {
 
   readonly columns = input.required<PassagensColumnConfig[]>();
   readonly fetchRows = input.required<(pagination: PaginationPayload) => Observable<PassagensResponse>>();
+  readonly fetchAddressByLocations = input.required<
+    (payload: AddressLookupRequestPayload) => Observable<AddressLookupResponse>
+  >();
   readonly reloadToken = input(0);
   readonly emptyResult = output<boolean>();
 
@@ -173,7 +178,6 @@ export class UiFilterTable {
 
     return [checkboxCol, ...orderedDataColumns, actionCol];
   });
-
   private gridApi?: GridApi<PassagemPosition>;
   private maxCreatedAt = 0;
 
@@ -212,6 +216,11 @@ export class UiFilterTable {
 
         this.fetchRows()(pagination)
           .pipe(
+            switchMap((response) =>
+              this.fetchAddressByLocations()(this.toAddressLookupPayload(response.Positions)).pipe(
+                map((addressResponse) => this.applyAddressToPositions(response, addressResponse)),
+              ),
+            ),
             catchError(() => {
               params.failCallback();
               return EMPTY;
@@ -219,6 +228,7 @@ export class UiFilterTable {
           )
           .subscribe((response) => {
             this.maxCreatedAt = response.maxCreatedAt;
+            console.log('response', response);
             params.successCallback(response.Positions, response.totalCount);
 
             if (params.startRow === 0) {
@@ -254,5 +264,43 @@ export class UiFilterTable {
     return validIds.has(columnId as PassagensDataColumnId)
       ? (columnId as PassagensDataColumnId)
       : fallback;
+  }
+
+  private toAddressLookupPayload(positions: PassagemPosition[]): AddressLookupRequestPayload {
+    return {
+      LocationList: positions.map((position, index) => ({
+        id: String(position.createdAt),
+        index,
+        latitude: position.latitude,
+        longitude: position.longitude,
+      })),
+    };
+  }
+
+  private applyAddressToPositions(
+    response: PassagensResponse,
+    addressResponse: AddressLookupResponse,
+  ): PassagensResponse {
+    const mappedPositions = response.Positions.map((position, index) => {
+      const address = addressResponse.LocationList[index];
+      if (!address) {
+        return position;
+      }
+
+      return {
+        ...position,
+        adress: {
+          type: addressResponse.Type,
+          street: address.street,
+          number: address.number,
+          bairro: address.bairro,
+        },
+      };
+    });
+
+    return {
+      ...response,
+      Positions: mappedPositions,
+    };
   }
 }

@@ -3,6 +3,8 @@ import { Observable, of } from 'rxjs';
 import { delay } from 'rxjs/operators';
 
 import {
+  AddressLookupRequestPayload,
+  AddressLookupResponse,
   PassagemPosition,
   PassagensRequestPayload,
   PassagensResponse,
@@ -32,6 +34,8 @@ export class PassagensDataAccess {
         memory: `${50 + (rowId % 50)}%`,
         gps: rowId % 2 === 0 ? 'OK' : 'Sem sinal',
         satellite: `${8 + (rowId % 5)}`,
+        latitude: `-23.${1000 + rowId}`,
+        longitude: `-46.${2000 + rowId}`,
         latitudeLongitude: `-23.${1000 + rowId}, -46.${2000 + rowId}`,
         location: `Rua ${rowId}, Cidade`,
         temperature1: `${20 + (rowId % 6)} C`,
@@ -54,6 +58,23 @@ export class PassagensDataAccess {
       Positions: positions,
     };
 
-    return of(response).pipe(delay(250));
+    return of(response).pipe(delay(3000));
+  }
+
+  getAddressByLocations(payload: AddressLookupRequestPayload): Observable<AddressLookupResponse> {
+    const firstBlock = payload.LocationList.slice(0, 100);
+    const locationList = firstBlock.map((location, offset) => {
+      const baseNumber = Number.parseInt(location.id, 10) || location.index + offset + 1;
+      return {
+        street: `Rua Mock ${baseNumber}`,
+        number: String(100 + (baseNumber % 900)),
+        bairro: `Bairro ${1 + (baseNumber % 20)}`,
+      };
+    });
+
+    return of({
+      Type: 'MOCK_REVERSE_GEOCODING',
+      LocationList: locationList,
+    }).pipe(delay(350));
   }
 }

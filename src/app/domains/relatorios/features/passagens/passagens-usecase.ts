@@ -3,6 +3,8 @@ import { Observable } from 'rxjs';
 
 import { PassagensDataAccess } from '../../data-access';
 import {
+  AddressLookupRequestPayload,
+  AddressLookupResponse,
   PassagensRequestPayload,
   PassagensResponse,
 } from './passagens.models';
@@ -13,6 +15,10 @@ export class PassagensUsecase {
 
   getPassagens(payload: PassagensRequestPayload): Observable<PassagensResponse> {
     return this.repository.getPassagens(payload);
+  }
+
+  getAddressByLocations(payload: AddressLookupRequestPayload): Observable<AddressLookupResponse> {
+    return this.repository.getAddressByLocations(payload);
   }
 
   // Reserved for future API that persists selected filters.
