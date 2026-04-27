@@ -1,89 +1,90 @@
-import { Component, output, viewChild } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  output,
+  signal,
+  viewChild,
+} from '@angular/core';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MatNativeDateModule } from '@angular/material/core';
-import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
+import { MatMenu, MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
 import { MatTimepickerModule } from '@angular/material/timepicker';
 
 @Component({
   selector: 'app-horario-filter',
   imports: [
-    FormsModule,
+    ReactiveFormsModule,
     MatButtonModule,
-    MatFormFieldModule,
     MatIconModule,
-    MatInputModule,
     MatMenuModule,
-    MatNativeDateModule,
+    MatFormFieldModule,
+    MatInputModule,
     MatTimepickerModule,
   ],
   templateUrl: './horario-filter.html',
   styleUrl: './horario-filter.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HorarioFilter {
-  private readonly horarioMenuTrigger = viewChild<MatMenuTrigger>('horarioMenuTrigger');
+  private readonly menu = viewChild<MatMenuTrigger>('MatMenuTrigger');
 
   readonly horarioApply = output<{ timeFrom: string; timeTo: string }>();
-  protected horarioInicio = '';
-  protected horarioFim = '';
-  protected draftHorarioInicio: Date | null = null;
-  protected draftHorarioFim: Date | null = null;
+
+  private appliedInicio: Date = new Date(0, 0, 0, 0, 0);
+  private appliedFim: Date = new Date(0, 0, 0, 23, 59);
+
+  protected hasAppliedRange = signal(false);
+  protected readonly maxTime = new Date(0, 0, 0, 23, 59);
+
+  protected form = new FormGroup({
+    inicio: new FormControl<Date>(new Date(0, 0, 0, 0, 0)),
+    fim: new FormControl<Date>(new Date(0, 0, 0, 23, 59)),
+  });
 
   getLabel(): string {
-    const inicio = this.horarioInicio;
-    const fim = this.horarioFim;
-    if (!inicio || !fim) {
-      return 'Horario';
-    }
-
-    return `${inicio} - ${fim}`;
-  }
-
-  hasAppliedRange(): boolean {
-    return !!this.horarioInicio && !!this.horarioFim;
+    if (!this.hasAppliedRange()) return 'Horário';
+    return `${this.formatTime(this.appliedInicio)} - ${this.formatTime(this.appliedFim)}`;
   }
 
   onMenuOpened(): void {
-    this.draftHorarioInicio = this.stringToDate(this.horarioInicio);
-    this.draftHorarioFim = this.stringToDate(this.horarioFim);
+    this.form.setValue({
+      inicio: this.appliedInicio,
+      fim: this.appliedFim,
+    });
+    this.form.markAsPristine();
+    this.form.markAsUntouched();
   }
 
   onCancel(): void {
-    this.draftHorarioInicio = this.stringToDate(this.horarioInicio);
-    this.draftHorarioFim = this.stringToDate(this.horarioFim);
+    this.form.setValue({
+      inicio: this.appliedInicio,
+      fim: this.appliedFim,
+    });
+    this.menu()?.closeMenu();
   }
 
   onApply(): void {
-    this.horarioInicio = this.dateToString(this.draftHorarioInicio);
-    this.horarioFim = this.dateToString(this.draftHorarioFim);
+    this.form.markAllAsTouched();
+    if (this.form.invalid) return;
+
+    this.appliedInicio = this.form.value.inicio!;
+    this.appliedFim = this.form.value.fim!;
+    this.hasAppliedRange.set(true);
+
     this.horarioApply.emit({
-      timeFrom: this.horarioInicio,
-      timeTo: this.horarioFim,
+      timeFrom: this.formatTime(this.appliedInicio),
+      timeTo: this.formatTime(this.appliedFim),
     });
-    this.horarioMenuTrigger()?.closeMenu();
+
+    this.menu()?.closeMenu();
   }
 
-  private dateToString(date: Date | null): string {
-    if (!date) {
-      return '';
-    }
-
-    const hora = date.getHours().toString().padStart(2, '0');
-    const minuto = date.getMinutes().toString().padStart(2, '0');
-    return `${hora}:${minuto}`;
-  }
-
-  private stringToDate(valor: string): Date | null {
-    if (/^\d{2}:\d{2}$/.test(valor)) {
-      const [hora, minuto] = valor.split(':');
-      const parsed = new Date();
-      parsed.setHours(Number(hora), Number(minuto), 0, 0);
-      return parsed;
-    }
-
-    return null;
+  private formatTime(date: Date): string {
+    const hh = String(date.getHours()).padStart(2, '0');
+    const mm = String(date.getMinutes()).padStart(2, '0');
+    return `${hh}:${mm}`;
   }
 }

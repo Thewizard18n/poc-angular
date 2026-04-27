@@ -1,4 +1,9 @@
-<button mat-stroked-button type="button" class="filter-trigger" (click)="openPicker($event)">
+<button
+  mat-stroked-button
+  type="button"
+  class="filter-trigger"
+  #MatMenuTrigger="matMenuTrigger"
+  [matMenuTriggerFor]="calendarMenu">
   <span class="filter-trigger__label">
     @if (hasRange()) {
       <mat-icon class="filter-trigger__calendar-icon">calendar_today</mat-icon>
@@ -8,18 +13,33 @@
   <mat-icon>arrow_drop_down</mat-icon>
 </button>
 
-<div class="periodo-picker-host" aria-hidden="true">
+<mat-menu #calendarMenu="matMenu" class="periodo-calendar-menu">
+  <ng-template matMenuContent let-close="close">
+    <div class="calendar-wrapper" (click)="$event.stopPropagation()">
 
-    <mat-date-range-input [rangePicker]="rangePicker">
-      <input matStartDate tabindex="-1" [(ngModel)]="draftDataInicio" />
-      <input matEndDate tabindex="-1" [(ngModel)]="draftDataFim" />
-    </mat-date-range-input>
+      <mat-calendar
+        [selected]="selectedRange"
+        (selectedChange)="onSelectedChange($event)">
+      </mat-calendar>
 
-    <mat-date-range-picker #rangePicker panelClass="periodo-range-panel">
-      <mat-date-range-picker-actions>
-        <button mat-button type="button" matDateRangePickerCancel (click)="onCancel()">Cancelar</button>
-        <button mat-stroked-button type="button" matDateRangePickerApply (click)="onApply()">Aplicar</button>
-      </mat-date-range-picker-actions>
-    </mat-date-range-picker>
+      @if (hasInvalidRange()) {
+        <p class="error-msg">Período máximo de 31 dias.</p>
+      }
 
-</div>
+      <div class="calendar-actions">
+        <button mat-button type="button" (click)="onCancel()">
+          Cancelar
+        </button>
+        <button
+          mat-stroked-button
+          type="button"
+          [disabled]="!draftStart() || !draftEnd()"
+          (click)="onApply()"
+          >
+          Aplicar
+        </button>
+      </div>
+
+    </div>
+  </ng-template>
+</mat-menu>

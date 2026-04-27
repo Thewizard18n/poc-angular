@@ -1,11 +1,9 @@
 <button
-  #horarioMenuTrigger="matMenuTrigger"
   mat-stroked-button
   type="button"
   class="filter-trigger"
   [matMenuTriggerFor]="horarioMenu"
-  (menuOpened)="onMenuOpened()"
->
+  (menuOpened)="onMenuOpened()">
   <span class="filter-trigger__label">
     @if (hasAppliedRange()) {
       <mat-icon class="filter-trigger__clock-icon">schedule</mat-icon>
@@ -17,29 +15,45 @@
 
 <mat-menu #horarioMenu="matMenu" panelClass="filter-menu-no-scroll">
   <div class="horario-menu-panel" (click)="$event.stopPropagation()">
-    <div class="horario-menu-inputs">
-      <div class="horario-field">
-        <mat-form-field class="horario-field__control" appearance="outline" subscriptSizing="dynamic">
-          <mat-label>Initial hour</mat-label>
-          <input matInput [matTimepicker]="pickerInicio" [(ngModel)]="draftHorarioInicio" />
-          <mat-timepicker-toggle class="horario-field__toggle" [for]="pickerInicio" />
-          <mat-timepicker #pickerInicio />
-        </mat-form-field>
-      </div>
 
-      <div class="horario-field">
-        <mat-form-field class="horario-field__control" appearance="outline" subscriptSizing="dynamic">
-          <mat-label>Final hour</mat-label>
-          <input matInput [matTimepicker]="pickerFim" [(ngModel)]="draftHorarioFim" />
-          <mat-timepicker-toggle class="horario-field__toggle" [for]="pickerFim" />
-          <mat-timepicker #pickerFim />
-        </mat-form-field>
-      </div>
+    <div class="horario-menu-inputs">
+
+      <mat-form-field appearance="outline" subscriptSizing="fixed">
+        <mat-label>Horário inicial</mat-label>
+        <input
+          matInput
+          [matTimepicker]="pickerInicio"
+          [formControl]="$any(form.get('inicio'))"
+          matTimepickerMax="12:00"
+        />
+        <mat-timepicker-toggle matIconSuffix [for]="pickerInicio" />
+        <mat-timepicker #pickerInicio />
+        @if (form.get('inicio')?.touched && form.get('inicio')?.invalid) {
+          <mat-error>Hora inválida</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" subscriptSizing="fixed">
+        <mat-label>Horário final</mat-label>
+        <input
+          matInput
+          [matTimepicker]="pickerFim"
+          [formControl]="$any(form.get('fim'))"
+          matTimepickerMax="11:59"
+        />
+        <mat-timepicker-toggle matIconSuffix [for]="pickerFim" />
+        <mat-timepicker #pickerFim />
+        @if (form.get('fim')?.touched && form.get('fim')?.invalid) {
+          <mat-error>Hora inválida</mat-error>
+        }
+      </mat-form-field>
+
     </div>
 
     <div class="horario-menu-actions">
-      <button mat-button matMenuClose type="button" (click)="onCancel()">Cancelar</button>
+      <button mat-button type="button" (click)="onCancel()">Cancelar</button>
       <button mat-stroked-button type="button" (click)="onApply()">Aplicar</button>
     </div>
+
   </div>
 </mat-menu>
