@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { ICellRendererAngularComp } from 'ag-grid-angular';
 import { ICellRendererParams } from 'ag-grid-community';
@@ -7,8 +8,18 @@ import { TableGridContext } from './ui-filter-table';
 
 @Component({
   selector: 'app-action-cell',
-  imports: [MatIcon],
-  template: `<mat-icon class="action-icon" [class.active]="active()" (click)="onClick()">place</mat-icon>`,
+  imports: [MatButtonModule, MatIcon],
+  template: `
+    <button
+      mat-mini-fab
+      type="button"
+      class="action-button"
+      [class.active]="active()"
+      aria-label="Destacar item no mapa"
+      (click)="onClick()">
+      <mat-icon>place</mat-icon>
+    </button>
+  `,
   styles: `
     :host {
       display: flex;
@@ -17,17 +28,22 @@ import { TableGridContext } from './ui-filter-table';
       width: 100%;
       height: 100%;
     }
-    .action-icon {
-      cursor: pointer;
-      color: #94a3b8;
-      font-size: 20px;
-      width: 20px;
-      height: 20px;
-      transition: color 0.15s;
+    .action-button {
+      width: 32px;
+      height: 32px;
+      min-height: 32px;
+      background: #f8fafc;
+      color: #64748b;
+      box-shadow: none;
+      transition:
+        background-color 0.15s,
+        color 0.15s;
     }
-    .action-icon:hover,
-    .action-icon.active {
-      color: #3b82f6;
+
+    .action-button:hover,
+    .action-button.active {
+      background: #dbeafe;
+      color: #2563eb;
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

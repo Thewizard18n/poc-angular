@@ -18,6 +18,8 @@
     <div class="calendar-wrapper" (click)="$event.stopPropagation()">
 
       <mat-calendar
+        [minDate]="minSelectableDate"
+        [maxDate]="maxSelectableDate"
         [selected]="selectedRange"
         (selectedChange)="onSelectedChange($event)">
       </mat-calendar>
@@ -33,7 +35,7 @@
         <button
           mat-stroked-button
           type="button"
-          [disabled]="!draftStart() || !draftEnd()"
+          [disabled]="!draftStart() || !draftEnd() || hasInvalidRange()"
           (click)="onApply()"
           >
           Aplicar

@@ -34,8 +34,14 @@ export class PeriodoFilter {
 
   private readonly menu = viewChild<MatMenuTrigger>('MatMenuTrigger');
   private static readonly MAX_RANGE_DAYS = 31;
+  private static readonly MAX_MONTHS_WINDOW = 6;
   private static readonly DAY_IN_MS = 24 * 60 * 60 * 1000;
   private readonly datePipe = inject(DatePipe);
+  protected readonly maxSelectableDate = this.normalizeDate(new Date());
+  protected readonly minSelectableDate = this.getDateMonthsAgo(
+    this.maxSelectableDate,
+    PeriodoFilter.MAX_MONTHS_WINDOW,
+  );
 
   readonly periodoApply = output<{ dateFrom: string | null; dateTo: string | null }>();
   protected dataInicio: Date | null = null
@@ -65,6 +71,8 @@ export class PeriodoFilter {
   }
 
   onSelectedChange(date: Date): void {
+    if (!this.isDateWithinAllowedWindow(date)) return;
+
     const start = this.draftStart();
     const end = this.draftEnd();
     let nextStart: Date | null;
@@ -122,6 +130,24 @@ export class PeriodoFilter {
 
   private formatDate(date: Date): string {
     return new Intl.DateTimeFormat('pt-BR').format(date);
+  }
+
+  private isDateWithinAllowedWindow(date: Date | null): boolean {
+    if (!date) return false;
+    const normalizedDate = this.normalizeDate(date);
+    return normalizedDate >= this.minSelectableDate && normalizedDate <= this.maxSelectableDate;
+  }
+
+  private normalizeDate(date: Date): Date {
+    const normalized = new Date(date);
+    normalized.setHours(0, 0, 0, 0);
+    return normalized;
+  }
+
+  private getDateMonthsAgo(fromDate: Date, months: number): Date {
+    const result = new Date(fromDate);
+    result.setMonth(result.getMonth() - months);
+    return this.normalizeDate(result);
   }
 
   private isRangeLongerThanAllowed(inicio: Date | null, fim: Date | null): boolean {
