@@ -5,7 +5,7 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenu, MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
@@ -40,8 +40,8 @@ export class HorarioFilter {
   protected readonly maxTime = new Date(0, 0, 0, 23, 59);
 
   protected form = new FormGroup({
-    inicio: new FormControl<Date>(new Date(0, 0, 0, 0, 0)),
-    fim: new FormControl<Date>(new Date(0, 0, 0, 23, 59)),
+    inicio: new FormControl<Date | null>(new Date(0, 0, 0, 0, 0), { validators: [Validators.required] }),
+    fim: new FormControl<Date | null>(new Date(0, 0, 0, 23, 59), { validators: [Validators.required] }),
   });
 
   getLabel(): string {
