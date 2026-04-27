@@ -18,8 +18,28 @@ export class VeiculoFilter implements OnInit {
   protected readonly allVehicles = signal<Vehicles[]>([]);
   protected readonly automotorChecked = signal(true);
   protected readonly naoAutomotorChecked = signal(true);
+  private readonly availableGroups = computed(() => {
+    const groups = this.allGroups();
+    const vehicleGroupIds = new Set(this.allVehicles().flatMap((vehicle) => vehicle.groups));
+
+    return groups.filter((group) => {
+      if (group.identifierSubGroup !== -1) {
+        return vehicleGroupIds.has(group.identifierSubGroup);
+      }
+
+      return (
+        vehicleGroupIds.has(group.identifierGroup) ||
+        groups.some(
+          (subGroup) =>
+            subGroup.identifierGroup === group.identifierGroup &&
+            subGroup.identifierSubGroup !== -1 &&
+            vehicleGroupIds.has(subGroup.identifierSubGroup),
+        )
+      );
+    });
+  });
   protected readonly filteredGrupos = computed(() => {
-    const all = this.allGroups();
+    const all = this.availableGroups();
     const automotor = this.automotorChecked();
     const naoAutomotor = this.naoAutomotorChecked();
     const search = this.groupSearch().trim().toLowerCase();
