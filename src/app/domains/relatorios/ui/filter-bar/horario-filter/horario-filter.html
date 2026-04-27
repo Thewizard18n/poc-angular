@@ -24,7 +24,7 @@
           matInput
           [matTimepicker]="pickerInicio"
           [formControl]="$any(form.get('inicio'))"
-          matTimepickerMax="12:00"
+          [matTimepickerMax]="form.get('fim')?.value"
         />
         <mat-timepicker-toggle matIconSuffix [for]="pickerInicio" />
         <mat-timepicker #pickerInicio />
@@ -39,7 +39,8 @@
           matInput
           [matTimepicker]="pickerFim"
           [formControl]="$any(form.get('fim'))"
-          matTimepickerMax="11:59"
+          [matTimepickerMin]="form.get('inicio')?.value"
+          [matTimepickerMax]="maxTime"
         />
         <mat-timepicker-toggle matIconSuffix [for]="pickerFim" />
         <mat-timepicker #pickerFim />
