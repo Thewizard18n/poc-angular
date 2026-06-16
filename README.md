@@ -1,119 +1,105 @@
-# PocAngularModerno
+# POC: Material 3 — mapeamento de tonal palette para system roles
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.1.4.
+Crie um projeto Angular 21 standalone que sirva como POC visual de como a tonal
+palette do Material 3 alimenta os system color roles e como esses roles são
+consumidos por componentes reais do Angular Material.
 
-## Development server
+## Contexto e objetivo
 
-To start a local development server, run:
+A POC tem um propósito didático: alinhar dev e designer sobre o modelo de cor do
+Material 3. A ideia central que ela precisa deixar óbvia é que **componentes não
+usam tons diretamente — usam roles (`--mat-sys-*`), e cada role aponta para um tom
+da palette tonal**. Mexer no tom OU reapontar o role deve refletir nos componentes
+ao vivo.
 
-```bash
-ng serve
-```
+## Stack obrigatória
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+- Angular 21+ (standalone components, sem NgModule)
+- Signals como reatividade primária, zoneless
+- `@angular/material` (versão compatível com Angular 21)
+- SCSS para theming via `mat.theme` e `mat.theme-overrides`
+- ChangeDetectionStrategy.OnPush em todos os componentes
 
-## Code scaffolding
+## Minha tonal palette (primary)
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+Use EXATAMENTE estes tons como a palette primary da POC. Não invente valores,
+não gere uma palette nova — use estes:
 
-```bash
-ng generate component component-name
-```
+<<<<<<<<<< COLE SEU TONAL AQUI >>>>>>>>>>
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+primary: (
+0: #000000,
+10: ...,
+20: ...,
+... (cole o resto)
+100: #ffffff,
+)
 
-```bash
-ng generate --help
-```
+<<<<<<<<<< FIM DO TONAL >>>>>>>>>>
 
-## Building
+Se eu colei mais de uma palette (secondary, tertiary, etc.), use todas. Se colei só
+a primary, foque nela.
 
-To build the project run:
+## O que a tela precisa ter
 
-```bash
-ng build
-```
+Layout em duas colunas:
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+### Lado esquerdo — palette tonal
 
-## Running unit tests
+- Liste todos os tons (0–100) como linhas: swatch da cor + número do tom + hex.
+- Dois modos de edição, alternáveis por um toggle no topo:
+  1. **Editar hex do tom**: clico num tom e edito o hex direto (color picker +
+     campo de texto). Isso muda a matéria-prima — todos os roles que apontam para
+     aquele tom mudam junto.
+  2. **Reapontar role→tom**: a palette fica fixa; troco via dropdown qual tom cada
+     role aponta. Muda só aquele papel, palette intacta.
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+### Meio — mapeamento role → tom
 
-```bash
-ng test
-```
+Mostre os quatro roles de primary com o tom que cada um consome:
 
-## Running end-to-end tests
+- `primary` (light: tom 40)
+- `on-primary` (light: tom 100)
+- `primary-container` (light: tom 90)
+- `on-primary-container` (light: tom 30)
 
-For end-to-end (e2e) testing, run:
+Cada linha: nome do role + swatch da cor resultante + qual tom aponta.
 
-```bash
-ng e2e
-```
+### Lado direito — componentes REAIS do Angular Material
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+Renderize componentes de verdade do `@angular/material`, não reproduções em CSS:
 
-## Additional Resources
+- `<button mat-flat-button>` (filled) — usa primary / on-primary
+- `<button mat-stroked-button>` (outlined) — usa primary na borda e texto
+- `<mat-chip>` ou chip selecionado — usa primary-container / on-primary-container
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Os componentes devem reagir às edições ao vivo, aplicando os valores via
+`mat.theme-overrides` (ou sobrescrevendo as variáveis `--mat-sys-*` em runtime).
 
-## Schematics customizados
+### Canto — painel de variáveis CSS ao vivo
 
-Este projeto possui schematics locais registrados no Angular CLI.
+Mostre as variáveis `--mat-sys-*` atuais com seus valores hex, atualizando a cada
+mudança. Esse painel representa o que o Angular Material escreve no `:root`.
 
-### Comandos de dominio
+## Theming — pontos importantes
 
-Criar dominio:
+- Aplique o tema base no elemento raiz (`html`) com `mat.theme`.
+- Para customizações pontuais de role, use `mat.theme-overrides` — NÃO edite tons
+  crus do tema nem mire seletores internos dos componentes.
+- A POC é só light theme.
+- Regra de contraste: sempre que um fundo usa um role, o texto em cima usa o `on-`
+  correspondente. Deixe isso explícito no código.
 
-```bash
-ng g domain --name <nome-do-dominio>
-```
+## Entregáveis
 
-Opcoes:
+1. Projeto Angular 21 rodável (`ng serve`).
+2. `styles.scss` com `mat.theme` configurado a partir do meu tonal.
+3. Component standalone com a tela descrita (duas colunas + painel de variáveis).
+4. README curto explicando como rodar e como a edição ao vivo funciona.
 
-- `--label "<texto>"` define o label do menu lateral
-- `--icon "<material-icon>"` define icone do menu lateral
-- `--has-sub` marca item com submenu
+## Antes de começar
 
-Exemplo:
-
-```bash
-ng g domain --name financeiro --label "Financeiro" --icon "payments" --has-sub
-```
-
-### Comandos de feature
-
-Criar feature simples:
-
-```bash
-ng g feature --name <nome-da-feature> --domain <nome-do-dominio>
-```
-
-Criar feature com rotas internas:
-
-```bash
-ng g feature --name <nome-da-feature> --domain <nome-do-dominio> --with-routes
-```
-
-Opcoes:
-
-- `--route-path <path>` define o path da rota no `<domain>.routes.ts`
-- `--group "<nome-do-grupo>"` adiciona a feature em um grupo de tabs da toolbar (cria o grupo se nao existir)
-- `--repository <arquivo-ou-classe>` escolhe o repository para injetar no usecase
-
-Exemplos:
-
-```bash
-ng g feature --name veiculos --domain relatorios
-ng g feature --name passagens --domain relatorios --with-routes
-ng g feature --name analitico --domain financeiro --group "Indicadores"
-ng g feature --name aprovar --domain financeiro --repository financeiro-api-mock
-```
-
-### Testar sem gerar arquivos
-
-```bash
-ng g domain --name compras --dry-run
-ng g feature --name resumo --domain financeiro --dry-run
-```
+Me explique em 3–4 linhas como você vai estruturar o projeto e como vai aplicar a
+edição ao vivo das variáveis (via theme-overrides recompilado vs. manipulação
+direta das CSS custom properties em runtime), pra eu confirmar a abordagem antes de
+você gerar tudo.
